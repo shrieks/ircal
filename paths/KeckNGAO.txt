@@ -1,0 +1,19 @@
+Surface desc.           Material        Temp (C)        Refl/Trans curve
+-------------           --------        --------        ----------------
+Primary                 Aluminum        2.6             Aluminum.txt
+Secondary               Aluminum        2.6             Aluminum.txt
+tertiary                Aluminum        2.6             Aluminum.txt
+
+rotator M1              Aluminum        5               Aluminum.txt
+rotator M2              Silver          5               X1_Silver_Extrap
+rotator M3              Aluminum        5               Aluminum.txt
+Tip Tilt M              Silver          5               X1_Silver_Extrap
+OAP1                    Silver          5               X1_Silver_Extrap
+DM                      Silver          5               X1_Silver_Extrap
+OAP2                    Silver          5               X1_Silver_Extrap
+IR Dich 1 S1            tt_dichroic     5               TT_Dichroic_Refl
+IR Dich 1 bulk          CAF2            5               CAF2 - bkg mat file
+IR Dich 1 S2            NIR_AR          5               NIR_AR - bkg mat file
+Instr Window S1         NIR_AR          5               NIR_AR - bkg mat file
+Instr Window Bulk       CAF2            5               CAF2 - bkg mat file
+

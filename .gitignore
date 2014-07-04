@@ -33,3 +33,13 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# image files
+*.fits
+*.png
+commissioning/*
+keckngao/*
+tables/*
+papers/*
+pipeline/*
+previous/*

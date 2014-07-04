@@ -1,0 +1,23 @@
+Surface desc.           Material        Temp (C)        Refl/Trans curve
+-------------           --------        --------        ----------------
+Primary                 Aluminum        10              Aluminum.txt
+Secondary               Aluminum        10              Aluminum.txt
+
+1st Turning Mirror      Measured        10              oldao_1turn
+Tip/Tilt Mirror         Measured        10              oldao_tiptilt
+OAP 1                   Measured        10              oldao_oap1
+DM                      Measured        10              oldao_dm
+OAP 2                   Measured        10              oldao_oap2
+NaDichroicSciencePath   NaR_splitter    10              NaR_Splitter
+IR Mirror 1             Silver          10              X1_Silver_Extrap
+IR Mirror 2             Silver          10              X1_Silver_Extrap
+IRCAL window            Silver          10              X1_Silver_Extrap
+--------------------------------------------
+Window                  Silver          -196            X1_Silver_Extrap
+Turn Mirror             Silver          -196            X1_Silver_Extrap
+OAP1                    Silver          -196            X1_Silver_Extrap
+Filter                  Silver          -196            X1_Silver_Extrap
+Cold Stop               Cold Stop       -196            ColdStop.txt
+OAP2                    Silver          -196            X1_Silver_Extrap
+Turn Mirror             Silver          -196            X1_Silver_Extrap
+PICNIC                  PICNIC_QE       -196            PICNIC_QE

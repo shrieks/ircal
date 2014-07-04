@@ -1,0 +1,55 @@
+All fluxes in photons / s (except RN2n)
+
+bdout = ss.simshane(bd, skymod='cp',df=0.03,odel=0.01,aoT=10.0)
+--------------
+Running Shane New AO simulation model with parameters:
+Source type: point source
+skymodel = cp, AO temp = 10.0, dust frac = 0.030
+Al delta = 0.0265, Other delta   = 0.0100
+Filter set = irc, Strehl ref = 0.8, subapertures=16
+              ['Ks' 'H' 'K' 'J']
+sky  imag:  [ 14.598  13.849  13.871  15.842]
+thruput  :  [ 0.171  0.175  0.165  0.136]
+totalflux:  [ 4660.85   1440.282  9688.112   197.525]
+sky  omag:  [ 11.856  13.833  11.026  15.802]
+src  flux:  [ 107921.636  205852.022  127764.169  192603.51 ]
+Rsrc     :  [ 480064.257  780716.625  573718.799  536065.134]
+Rsky+emi :  [ 3009.48    551.718  6520.149    42.288]
+Remi     :  [ 2768.327     6.04   6069.626     0.001]
+RN2n     :  [ 2232.562  1323.     2342.812   744.188]
+Tot flux :  [ 485306.299  782591.343  582581.761  536851.609]
+Fowler limiting mag: [ 11.2    12.642  10.975  13.585]
+
+
+bd8  = ss.simshane(bdwaves,skymod='cp',df=0.03,odel=0.01,subaps=8,aoT=10.0)
+
+bdout = ss.simshane(bdwaves, skymod='cp',df=0.01,odel=0.01,aoT=10.0)
+
+In [66]: bdout = ss.simshane(bdwaves, skymod='cp',df=0.02,odel=0.01,aoT=10.0)
+
+
+DF of 0.001 - 0.01 explains low Rsky*texp number
+
+Angie's run was at ~20C for darks and sky, 8x subaps for sky
+bdout = ss.simshane(bdwaves, skymod='cp',df=0.02,odel=0.01,aoT=20.0,subaps=8)
+--------------
+Running Shane New AO simulation model with parameters:
+Source type: point source
+skymodel = cp, AO temp = 20.0, dust frac = 0.020
+Al delta = 0.0265, Other delta   = 0.0100
+Filter set = irc, Strehl ref = 0.6, subapertures=8
+81.0
+48.0
+85.0
+27.0
+              ['Ks' 'H' 'K' 'J']
+sky  imag:  [ 14.598  13.849  13.871  15.842]
+thruput  :  [ 0.203  0.208  0.197  0.162]
+totalflux:  [  8785.51    1733.934  17990.904    235.159]
+sky  omag:  [ 11.357  13.821  10.543  15.802]
+src  flux:  [ 11.384   1.418  14.843   0.492]
+Rsrc     :  [ 37.519   3.244  49.988   0.555]
+Rsky     :  [  5672.745    664.206  12107.971     50.344]
+Remi     :  [  5385.657     14.585  11571.631      0.003]
+RN2n     :  [ 2232.562  1323.     2342.812   744.188]
+Fowler limiting mag: [ 0.59  -0.911  0.491 -1.466]

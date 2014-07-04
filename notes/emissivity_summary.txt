@@ -1,0 +1,157 @@
+
+Sky model:
+
+My Mauna Kea model sky spectrum is from the Gemini SciOps data at airmiass 1.0,
+1.6 mm water vapor.  Filter zero point information taken from the UKIRT web
+pages, which are updated from Tokunaga & Vacca 2005.  Filter specs used to
+calculate the zero points are from Tokunaga & Simon 2001.
+
+   Flux(W m^-2 um^-1)   Jy   My_zp: photons s^-2 m^-2 in each bandpass
+J    3.01e-9          1560   3.031e9
+H    1.18e-9          1040   2.817e9
+Ks   4.35e-10         670    1.5066e9
+K'   4.57e-10         686    1.658e9
+K    4.00e-10         645    1.5062e9
+
+Using the sky model, filter zero points and filter specs, I calculate the Mauna
+Kea sky brightness to be, in magnitudes ascsec^-2:
+
+J 16.1
+H 13.8
+K' 14.8
+Ks 14.8
+K 14.9
+
+These match the observed values reasonably well.
+
+For Mt Hamilton, the Gemini dual camera IR instrument web pages quote the
+following sky backgrounds, all in magnitude arcsec^-2:
+
+J 16
+H 14
+K 13
+
+The IRCAL manual quotes a K'-band sky brightness of 13 magnitudes
+asec^-2, and says that the J and H backgrounds are 1-2 magnitudes
+fainter.  I will use the values for J and H given for Mt. Hamiltion on
+the Gemini web pages, as that instrument is used more frequently in J
+and H. J=15, as could be inferred from the IRCAL pages, is much
+brighter than any other J-band sky estimate.
+
+My Mt. Hamilton sky background model is based on the Cerro Pachon sky spectrum
+from the Gemini Obseratory SciOps data.  Cerra Pachon is at 9000' and the sky is
+calculated for a temperature of 280K, more appropriate to Mt. Hamilton than the
+Mauna Kea sky.  The sky model is for airmass 1.0, 10 mm precipable water vapor, 
+as appropriate for Mt. Hamilton.
+
+Using that model sky, I compute an sky brightness as follows,
+in magnitude arcsec^2:
+
+J 16.1
+H 13.8
+Ks 14.6
+K' 14.6
+K 14.4
+
+This reproduces the J and H band sky brightness on Mt. Hamilton, but to get to
+K=13 I have to add an additional thermal component to increase the sky
+emissivity in K. The emissivity spectrum of this additional source is based on
+the sky transmission model that goes with the Cerro Pachon sky model, calculated
+using ATRAN. Emissivity is 1-transmission.  However, I need to impose on that
+transmission spectrum a minimum emissivity of 0.5 at all wavelengths.  The
+effect of the minimum is to increase the K-band emissivity and leave the J- and
+H-band sky values unchanged.  Increasing the temperature of the sky spectrum
+alone to reproduce K'=13 mag asec^-2, as given in the IRCAL manual, requires a
+temperature of 313 K (40 C), which seems unreasonably high.  It is possible that
+an ATRAN transmission spectrum calculated for the 4200 foot altitude of
+Mt. Hamilton would reproduce the K-band sky brightness without the need for the
+emissivity floor; I will pursue that in a later refinement of these
+calculations.
+
+My final, adjusted sky model predicts the Mt. Hamilton sky background to be:
+
+J 16.1
+H 13.8
+Ks 12.9
+Kp 13.1
+K 12.3
+
+Now for the AO system and instrument emissivities for the existing Shane AO and
+IRCAL.  First I validate my model by reproducing the Keck AO system values, as
+given in KAON501. The sky and emissivity model for the existing Keck AO system
+used in KAON501 reproduce the measured background for the current Keck AO
+system and NIRC2 instrument, and it is that calculation that I aim to match
+in order to validate my model. 
+
+The Keck total NIR background as measured with NIRC2 and quoted in NGAO doc
+KAON501 is given below, in mag asec^-2.  The J-band discrapancy is noted in
+KAON501 but not explained, and I will not attempt to explain it, either.
+
+J 14.9
+H 13.6
+K 12.6
+
+I follow KAON501 an model Keck with three aluminum surfaces at a temperature of
+275.6 K. The rotator and AO system are all modeled at 278 K. Both temperatures
+are the same as used in the KAON501 document. The rotator is three surfaces, two
+silvered and one aluminum.  The AO system is modeled with four silvered
+reflective surfaces, two surfaces and bulk emissivity for the dichroic, and one
+surface plus bulk emissivity for the instrument window.  The bulk emissivities
+are not an important contribution to the backgrounds. 
+
+The silvered surfaces in the rotator and AO system are modeled with the
+reflectivity curves of an enhanced silver coating by QCI (formerly Denton
+Vacuum).  The transmission of the exit surface of the dichroic and the entrance
+surface of the instrument window are modeled with the same coating for
+convenience, as it is a reasonable proxy for a good but realistic near-IR
+antireflection coating.  The front surface of the dichroic is modeled with the
+measured Tip-Tilt dichroic reflectivity for the Shane AO upgrade. This is a
+realistic, and is a reasonable match to the curve used in KAON501, which
+was taken to be the one for the Palomar AO system.
+
+The aluminum surfaces are modeled by adjusting the reflectivity of pristine
+alumiunum down by 2.65% to reproduce some real-world data. Campbell et
+al. (2003) measure the emissivity of Keck 1 to be 6.5% at 10 um.  The telescope
+configuration for their measurement was a gold-coated secondary and a bare
+alumium primary mirror.  They estimate 0.5% of the mirror area is in gaps
+between segments. The emissivity of gold is less than 2% through the NIR.  Using
+a value of 2% for the emissivity of gold and 1.0 for the emissivity of the
+segment gaps, I can solve for the emissivity of alumimun that reproduces the
+Cambell et al. (2003) measurement.  Doing that suggests that the average
+reflectivty of the K1 primary aluminum is 96%, lower than the ideal value for
+pristine aluminum.  Lowering the reflectivity of pristine aluminum by 2.65%
+results in an average reflectivity of 95.5% at wavelengths 2 microns and redder.
+The adjusted reflectivity aluminum curve in this region matches quite well the
+reflectivity data for aluminum in the Gemini observatory mirror coating
+development papers (**ref SPIE paper).  The KAON501 document uses a protected
+aluminum coating that has significantly lower reflectivity, and therefore higher
+emissivity, than pristine aluminum.  The adjusted aluminum reflectivty in my
+model matches the final version of the aluminum coating in KAON501, including
+the fudge factor of 0.8% used in KAON501. 
+
+To reproduce the Keck AO and isntrument background data, I need to adjust the
+surface emissivities. I assume that 5% of each surface (telescope, rotator and
+AO system) is covered with dust or some other contaminating material with
+emissiity of 0.5.  The effective emissivity of each surface is then the
+area-weighted average of the emissivity of the surface coating and the dust.
+For dust emissivity of 0.5 and 5% covering factor, the effective emissivity of
+each surface increases by about 2%.  
+
+Using the Manua Kea sky, the adjusted aluminum emissivity and the other coatings
+as given above, and with the 5% dust contamination, I compute the following
+backgrounds for the Keck AO system, in mag asec^-2:
+
+J 16.1
+H 13.8
+K 12.2
+Ks 12.7
+Kp 13.0
+
+If I use emissivity=1.0 for the dust, a covering factor of 2% gives th same
+result.  The ~2% effective increase in the emissivity from the 5% dust
+contamination is larger than the 0.8% increase KAON501 required to match the
+background and data for the Keck system.  The discrepancy comes from how the
+total system background is calculated in KAON501, which leads to about a factor
+of 2 larger predicted flux for given surface emissivities vs. my calculations. I
+am now sure that the calculations in KAON501 are incorrect.
+

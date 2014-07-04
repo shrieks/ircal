@@ -1,0 +1,18 @@
+================================================================================
+Title: The Near-Infrared Broad Emission Line Region of Active Galactic Nuclei I.
+       The Observations
+Authors: Landt H., Bentz M.C., Ward M.J., Elvis M., Peterson B.M.,
+         Korista K.T., Karovska M.
+================================================================================
+Description of contents: IRAF compatible 1-dimensional spectral fits-files, 
+                          near-IR IRTF SpeX (0.8 - 2.4 mum) and optical 
+			  Tillinghast 1.5 m FAST (3720 - 7515 Ang), 
+			  2 x 23 spectra
+
+System requirements: none (IRAF compatible)
+
+Additional comments:
+All text files have two columns:
+1 - rest frame wavelength in microns
+2 - flux in ergs s-1 cm-2 A-1
+================================================================================

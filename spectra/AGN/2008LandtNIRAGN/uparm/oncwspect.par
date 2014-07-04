@@ -1,0 +1,5 @@
+input,s,a,"@input.txt",,,"Input list of image spectra"
+output,s,a,"@output.txt",,,"Output list of text spectra"
+header,b,h,yes,,,"Include header?"
+wformat,s,h,"",,,"Wavelength format"
+mode,s,h,"ql",,,

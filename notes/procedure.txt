@@ -1,0 +1,61 @@
+
+Example is J filter - 
+start  lambda = 1170 nm
+center lambda = 1250 nm
+end    lambda = 1330 nm
+zero point    = 3.031e9 ph s-1 m-2
+
+For the sky:
+-----------
+Read in sky background in units photons s-1 m-2 nm-1 arcsec-2
+compute dlambda (dlam) for sky background file
+
+sky flux in J = dlam*Sum(sky flux between 1250 and 1330 nm)
+              = 1128 ph s-1 m-2 arcsec-2
+
+sky magnitude = -2.5*log10((sky flux in J)/(J zero point))
+              = 16.073 mag arcsec-2
+
+airy disk core radius in J filter = 3600*(180/pi)*1.22*(center lambda in m)/
+     	       	      	   	    		       (telescope dia in m)
+			          = 0.03 arcsecs for Keck
+
+airy disk core angular area = pi*(core radius)^2 
+     	       	            = 0.003 arcsec^2
+
+Propagate sky flux in J through optics:
+sky flux in airy core = dlam * Sum(sky flux output from telescope in J)
+    	    	      	* (core area) * 0.86 * strehl
+		      = 3.0 ph s-1 m-2
+
+For the source:
+--------------
+Flux at top of atmosphere, F_lambda = 3.631e-9 erg s-1 cm-2 A-1
+Convert units:                      = 3.631e-4 erg s-1 m-2 nm-1
+hc in cgs                           = 1.9865e-16 erg cm
+
+At each lambda, F at top of atmosphere = 3.631e-4 * (lambda in cm)/hc
+                                 units = ph s-1 m-2 nm-1
+
+Read in sky transmission file
+Flux at telescope = (F at top of atmosphere) * (sky transmission)
+            units = ph s-1 m-2 nm-1
+
+Flux in J at primary = dlam * Sum(flux at telescope in J)
+               units = 3.6e10 ph s-1 m-2
+
+src magnitude at primary = -2.5*log10((src flux in J)/(J zero point))
+                         = -2.68 mag
+
+Propagate flux at telescope through optics:
+source flux in airy core = dlam * Sum(src flux output from telescope in J)
+       	       	    	   * 0.86 * strehl
+                   units = ph s-1 m-2
+
+src magnitude at output = -2.5*log10((src flux in airy core)/(J zero point))
+                        = -2.68 mag
+
+Signal to noise ratio = (source flux in airy core * area of telescope)/
+       	                sqrt((src + sky in airy core) * area of telescope)
+		      = (src in airy core)*sqrt(area)/(src + sky in airy core)
+		      = huge!

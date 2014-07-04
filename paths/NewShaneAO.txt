@@ -1,0 +1,32 @@
+Surface desc.           Material        Temp (C)        Refl/Trans curve
+-------------           --------        --------        ----------------
+Primary                 Aluminum        10              Aluminum.txt
+Secondary               Aluminum        10              Aluminum.txt
+
+Fold Mirror 1           Lick coating    10              FM3 (NIR) + 589nm 
+OAP 1                   Lick coating    10              FM3 (NIR) + 589nm 
+DM1                     Prot. Silver    10              ALPAO.txt
+OAP 2                   Lick coating    10              FM3 (NIR) + 589nm 
+[TT dichroic            TT Dichroic     10     	  (LGS) TT_DichBS1-refl.txt 
+ Fold Mirror 2          Lick coating    10        (NGS) FM3 (NIR) + 589nm   ]
+OAP 3                   Lick coating    10              FM3 (NIR) + 589nm
+MEMs window             MEMs_Window     10              MEMS_window.txt
+MEMs window             MEMs_Window     10              MEMS_window.txt
+MEMs DM                 Bare Gold       10              BAU.txt
+MEMs window             MEMs_Window     10              MEMS_window.txt
+MEMs window             MEMs_Window     10              MEMS_window.txt
+NaDichroicSciencePath   WFS_Dichroic    10              WFS_DichBS4-trans.txt
+OAP 4                   Lick coating    10              FM3 (NIR)
+Fold mirror 3           Lick coating    10              FM3
+Dewar window            IR anti-refl    10              ARIR.txt
+-------------------------------------------
+Dewar window            IR anti-refl    -196            ARIR.txt
+IR fold mirror          Ni+Gold         -196            BAU.txt
+OAP_ircal_1             Ni+Gold         -196            BAU.txt
+Filter                  J,H,K           -196            NaHG.txt
+[Grism                                  -196            Grism.txt] - Spectro
+Cold stop               Cold stop       -196            ColdStop.txt
+OAP_ircal_2             Ni+Gold         -196            BAU.txt
+IR fold mirror          Ni+Gold         -196            BAU.txt
+H2RG                    H2RG_QE         -196            H2RG_QE.txt
+--------------------------------------------

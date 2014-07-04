@@ -1,0 +1,170 @@
+namelist = ['MEMS_window', 'PICNIC_QE', 'IR_transmission', 'Kprime','Hband', 'Jband', 'ALPAO', 'Aluminum', 'AluminumPlusDust','ARIR', 'CaF', 'FSG98', 'H2RG_QE', 'LGSWFS_Dich', 'NaHG', 'NaR_Splitter', 'TT_Dichroic_Refl','X1_Silver_Extrap']
+
+lambda = 600 + findgen((2300-600)/50.0 + 1)*50
+
+.comp getcoatingdata
+
+.comp throughput    
+
+.comp emissivity
+
+temp1 = 10
+
+out = emissivity2(lambda, namelist, temp1=10, fileroot='./emissdatafiles', /throughput_eff)
+
+MEMS_window      0.99434194      502.456      2493.96
+Null spline,PICNIC_QE
+PICNIC_QE      0.62000000      500.000      2300.00
+IR_transmission      0.99997199      900.000      5600.00
+Kprime      0.96148003      800.000      3300.00
+Hband      0.87165001      800.000      3300.00
+Jband      0.89588997      800.000      3300.00
+ALPAO      0.99178424      403.906      2314.06
+Aluminum      0.97961160      220.000      30000.0
+AluminumPlusDust      0.78368931      220.000      30000.0
+ARIR      0.99699997      200.000      3000.00
+CaF      0.91648989      166.475      9003.61
+FSG98      0.98750179      414.286      2571.43
+Null spline,H2RG_QE
+H2RG_QE      0.80000000      500.000      2300.00
+LGSWFS_Dich       10.432043      815.508      3000.00
+NaHG      0.99154534      332.985      3000.00
+NaR_Splitter       1.0000000      200.000      3000.00
+TT_Dichroic_Refl       1.2151050      795.144      2496.81
+X1_Silver_Extrap      0.98178893      400.189      3000.00
+MEMS_window      0.99434194      502.456      2493.96
+IDL> help, throughput_eff
+THROUGHPUT_EFF  UNDEFINED = <Undefined>
+
+forprint, lambda, out, format='(f7.2,1x,e14.5)', comment="# lambdas(nm)  output", textout='emissivity-idl.out'
+
+  plot, lambda, out, xrange=[800,2300], /ylog, xsty=1, xtit='Wavelength (nm)', ytit=textoidl('#/(s m^2 arcsec^2 nm)'), xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1
+
+write_png, 'idloutput.png', tvrd()
+
+  ;======================================================
+
+readcol, 'skybgfiles/mk_skybg_zm_16_10_ph.dat', /silent, format='f,f',skylamall, skyfluxall
+dlam = 0.02
+readcol, 'skybgfiles/nearIR_skybg_16_15_r5.dat', /silent, format='f,f',skylamall, skyfluxall
+dlam = 0.1
+
+inir = where(skylamall lt 2700.)
+lambda = skylamall[inir]
+skyflux = skyfluxall[inir]
+
+; three aluminum mirrors for the telescope
+; aluminum-silver-aluminum for the rotator
+; 4 silvered surfaces for the AO system: 2 OAPs, Tip-Tilt mirror, DM
+; dichroci first surface, dichroic second surface, instrument window. 
+; assume the second surface of the window is cold, so no emissivity,
+; and nothing for the bluk because that is trivial. look later to check. 
+keckao = ['Aluminum', 'Aluminum', 'Aluminum', 'Aluminum', 'X1_Silver_Extrap', 'Aluminum', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap',  'X1_Silver_Extrap', 'TT_Dichroic_Refl', 'X1_Silver_Extrap',  'X1_Silver_Extrap']
+
+keckaotlist = [2.6, 2.6, 2.6, 5,5,5,5,5,5,5,5,5,5]
+
+deltalist = [0.0265, 0.0265, 0.0265, 0.0265, 0.0, 0.0265, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+jidx = where(lambda gt 1170. and lambda lt 1330.)
+hidx = where(lambda gt 1490. and lambda lt 1780.)
+ksidx = where(lambda gt 1990. and lambda lt 2310.)
+kidx = where(lambda gt 2030. and lambda lt 2370.)
+kpidx = where(lambda gt 1950. and lambda lt 2290.)
+
+;zero points: photons sec^1 m^2 in the specified bandpass
+jzp = 3.031e9
+hzp = 2.817e9
+kszp = 1.5066e9
+kzp = 1.5062e9
+kpzp = 1.658e9
+
+tkeck = background(lambda, keckao, keckaotlist, skyflux, deltalist, dustfrac=0.008, edust=1.0, total_trans=ttrans, fileroot='./emissdatafiles')
+
+avtran = total(ttrans[jidx])/(n_elements(jidx))
+jflux = (total(tkeck[jidx])*dlam)/avtran
+
+avtran = total(ttrans[hidx])/(n_elements(hidx))
+hflux = (total(tkeck[hidx])*dlam)/avtran
+
+avtran = total(ttrans[kidx])/(n_elements(kidx))
+ kflux = (total(tkeck[kidx])*dlam)/avtran
+
+avtran = total(ttrans[ksidx])/(n_elements(ksidx))
+ksflux = (total(tkeck[ksidx])*dlam)/avtran 
+
+avtran = total(ttrans[kpidx])/(n_elements(kpidx))
+kpflux = (total(tkeck[kpidx])*dlam)/avtran
+
+
+  print, "J ", jflux, -2.5*alog10(jflux/jzp)
+  print, "H ", hflux, -2.5*alog10(hflux/hzp)
+  print, "K ", kflux, -2.5*alog10(kflux/kzp)
+  print, "Ks ", ksflux, -2.5*alog10(ksflux/kszp)
+  print, "Kp ", kpflux, -2.5*alog10(kpflux/kpzp)
+
+------------------------------------------------------------
+
+readcol, 'skybgfiles/lick_sky_zenith.txt', /silent, format='f,f', skylamall, skyfluxall
+inir = where(skylamall lt 2700.)
+lambda = skylamall[inir]
+dlam = 0.02
+skyflux = skyfluxall[inir]
+IRCALROOT='./emissdatafiles'
+
+jidx = where(lambda gt 1170. and lambda lt 1330.)
+hidx = where(lambda gt 1490. and lambda lt 1780.)
+ksidx = where(lambda gt 1990. and lambda lt 2310.)
+kidx = where(lambda gt 2030. and lambda lt 2370.)
+kpidx = where(lambda gt 1950. and lambda lt 2290.)
+jzp = 3.031e9
+hzp = 2.817e9
+kszp = 1.5066e9
+kzp = 1.5062e9
+kpzp = 1.658e9
+
+oldao = ['Aluminum', 'Aluminum', 'oldao_1turn', 'oldao_tiptilt', 'oldao_oap1', 'oldao_dm', 'oldao_oap2','NaR_Splitter', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap']
+oldaotlist = [10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10.]
+oldaodeltalist = [0.0265, 0.0265, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+.comp previous/idl/getcoatingdata
+.comp previous/idl/throughput
+.comp previous/idl/background
+
+eopt_oldao = background(lambda, oldao, oldaotlist, skyflux, oldaodeltalist, dustfrac=0.0, fileroot=IRCALROOT, total_trans=oldaotrans)
+bg_oldao = 0.181*background(lambda, oldao, oldaotlist, skyflux*0.0, oldaodeltalist, dustfrac=0.0, fileroot=IRCALROOT, /allemis)
+eoldao = eopt_oldao+bg_oldao
+
+avtran = total(oldaotrans[jidx])/(n_elements(jidx))
+jflux = (total(eopt_oldao[jidx])*dlam)/avtran
+
+avtran = total(oldaotrans[hidx])/(n_elements(hidx))
+hflux = (total(eopt_oldao[hidx])*dlam)/avtran
+
+avtran = total(oldaotrans[kidx])/(n_elements(kidx))
+ kflux = (total(eopt_oldao[kidx])*dlam)/avtran
+
+avtran = total(oldaotrans[ksidx])/(n_elements(ksidx))
+ksflux = (total(eopt_oldao[ksidx])*dlam)/avtran 
+
+avtran = total(oldaotrans[kpidx])/(n_elements(kpidx))
+kpflux = (total(eopt_oldao[kpidx])*dlam)/avtran
+
+  print, "Old AO only"
+  print, "J ", jflux, -2.5*alog10(jflux/jzp)
+  print, "H ", hflux, -2.5*alog10(hflux/hzp)
+  print, "K ", kflux, -2.5*alog10(kflux/kzp)
+  print, "Ks ", ksflux, -2.5*alog10(ksflux/kszp)
+  print, "Kp ", kpflux, -2.5*alog10(kpflux/kpzp)
+
+jflux = (total(eoldao[jidx])*dlam)/avtran
+hflux = (total(eoldao[hidx])*dlam)/avtran
+ kflux = (total(eoldao[kidx])*dlam)/avtran
+ksflux = (total(eoldao[ksidx])*dlam)/avtran 
+kpflux = (total(eoldao[kpidx])*dlam)/avtran
+
+  print, "Old AO + bg"
+  print, "J ", jflux, -2.5*alog10(jflux/jzp)
+  print, "H ", hflux, -2.5*alog10(hflux/hzp)
+  print, "K ", kflux, -2.5*alog10(kflux/kzp)
+  print, "Ks ", ksflux, -2.5*alog10(ksflux/kszp)
+  print, "Kp ", kpflux, -2.5*alog10(kpflux/kpzp)

@@ -1,0 +1,200 @@
+#+1352607285
+ls /sw/bin
+#+1352607307
+python
+#+1352607327
+exit
+#+1352773698
+which calibredb
+#+1352774714
+cd Documents/
+#+1352774715
+ls
+#+1352774723
+cd eBooks/
+#+1352774725
+cd Calibre\ Library/
+#+1352774726
+ls
+#+1352774733
+ls Unknown/
+#+1352774760
+ls /Volumes/nook/
+#+1352774767
+ls /Volumes/nook/my\ B\&N\ downloads/
+#+1352774812
+calibredb add /Volumes/nook/my\ B\&N\ downloads/2980393069199.epub
+#+1352774852
+calibredb add /Volumes/nook/my\ B\&N\ downloads/2981429969179.epub
+#+1352775115
+calibredb add /Volumes/nook/my\ B\&N\ downloads/9780307379573.epub
+#+1352775536
+calibredb add ../../My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/bonk_9780393069211.epub
+#+1352775663
+calibredb add ../../My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/bonk_9780393069211.epub
+#+1352775688
+ls
+#+1352775692
+ls Mary\ Roach/
+#+1352775713
+calibredb add ../../My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/bonk_9780393069211.epub
+#+1352775733
+ls ../../My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/
+#+1352775743
+calibredb add ../../My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/buddhasbrain_9781608820474.epub
+#+1352775751
+calibredb add ../../My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/soccernomics_9781568587059.epub
+#+1352775762
+calibredb add ../../My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/theemperorofallmalad_9781439181713.epub
+#+1352775769
+ls ../../My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/
+#+1352775777
+calibredb add ../../My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/theinformation_9780307379573.epub
+#+1352775787
+calibredb add ../../My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/thekalaharitypingsch_9781400079414.epub
+#+1352775797
+calibredb add ../../My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/thinkingfastandslow_9781429969352.epub
+#+1352778346
+cd
+#+1352778347
+exit
+#+1352779268
+ls
+#+1352779268
+cd Documents/My\ Barnes\ \&\ Noble\ eBooks/benchoad@yahoo.com/
+#+1352779274
+cd ..
+#+1352779277
+cd bnnook@shrieks.com/
+#+1352779278
+ls
+#+1352779314
+calibredb add beautifulthing_9780802194725.epub
+#+1352779323
+calibredb add behindthebeautifulfo_9780679643951.epub
+#+1352779504
+calibredb add recklessendangerment_9781429965774.epub
+#+1352779511
+calibredb add shantaram_9781429908276.epub
+#+1352779516
+cd
+#+1352779517
+exit
+#+1353286394
+xterm &
+#+1353286411
+emacs
+#+1353286421
+xterm &
+#+1353307380
+x
+#+1353307382
+x
+#+1355282565
+cd /Volumes/PHOTODISP2/
+#+1355282566
+ls
+#+1355282578
+ls > ~/Desktop/photodisp2
+#+1355282604
+cd
+#+1355282606
+exit
+#+1359488868
+exit
+#+1362300866
+exit
+#+1362301140
+sudo port selfupdate
+#+1362301279
+exit
+#+1362335613
+xterm &
+#+1362406786
+exit
+#+1362521937
+ssh ssh.ucolick.org
+#+1362525380
+exit
+#+1362702836
+exit
+#+1364849780
+cd ../..
+#+1364849784
+; s
+#+1364849784
+cd ../ircal/
+#+1364849785
+ls
+#+1364849805
+m simCshane.py
+#+1364849810
+ls
+#+1364850468
+cd ../..
+#+1364850471
+cd ../ircal/
+#+1364850471
+ls
+#+1364850478
+m README.md
+#+1364850512
+cd ../../../ircal/
+#+1364850517
+emacs &
+#+1364850521
+kill %1
+#+1364850522
+emacs
+#+1364851001
+exit
+#+1364851003
+exit
+#+1364851005
+exit
+#+1365477708
+ls
+#+1365477912
+ls
+#+1365477970
+cd ..
+#+1365477972
+cd ..
+#+1365477973
+ls
+#+1365477975
+alias du
+#+1365477981
+du -h -d 1
+#+1365478427
+cd research/ircal/
+#+1365478428
+ls
+#+1365486442
+exit
+#+1366907240
+ls
+#+1366907247
+m simshane.py
+#+1366907271
+m simshane.py
+#+1366930220
+exit
+#+1367520405
+ls
+#+1367520550
+ls
+#+1369546796
+ls
+#+1369546816
+emacs background.py
+#+1369548458
+ls
+#+1369548469
+emacs simIrcal.py
+#+1369763996
+m simshspec.py
+#+1369809996
+exit
+#+1369810011
+exit

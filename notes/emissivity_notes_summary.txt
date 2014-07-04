@@ -1,0 +1,330 @@
+cd, '/b/ircal/throughput'
+readcol, 'skybgfiles/mk_skybg_zm_16_10_ph.dat', /silent, format='f,f', skylamall, skyfluxall
+inir = where(skylamall lt 2700.)
+lambda = skylamall[inir]
+skyflux = skyfluxall[inir]
+
+keckao1 = ['Aluminum', 'Aluminum']
+; one silvered surface for the rotator; 4 silvered surfaces for the AO system: 2
+; OAPs, Tip-Tilt mirror, DM; dichroci first surface, dichroic second surface,
+; instrument window. Could add another surface for the bulk but that probably 
+; over-counts it.
+keckao2 = ['X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap',  'X1_Silver_Extrap','TT_Dichroic_Refl', 'X1_Silver_Extrap','X1_Silver_Extrap', 'X1_Silver_Extrap'] 
+
+keck = ['Aluminum', 'Aluminum', 'Aluminum']
+
+jidx = where(lambda gt 1170. and lambda lt 1330.)
+hidx = where(lambda gt 1490. and lambda lt 1780.)
+ksidx = where(lambda gt 1990. and lambda lt 2310.)
+kidx = where(lambda gt 2030. and lambda lt 2370.)
+kpidx = where(lambda gt 1950. and lambda lt 2290.)
+jzp = 3.031e9
+hzp = 2.817e9
+kszp = 1.5066e9
+kzp = 1.5062e9
+kpzp = 1.658e9
+
+tekeck = emissivity(lambda, keck, 2.6, delta=0.0265, dustfac=0.05,fileroot='emissdatafiles') 
+tekao1 = emissivity(lambda, keckao1, 5., delta=0.0265, dustfac=0.05,fileroot='emissdatafiles')
+tekao2 = emissivity(lambda, keckao2, 5., dustfac=0.05,fileroot='emissdatafiles')
+print, total(skyflux[kidx]+tekeck[kidx]+tekao1[kidx]+tekao2[kidx])*0.02
+kflux =  total(skyflux[kidx]+tekeck[kidx]+tekao1[kidx]+tekao2[kidx])*0.02
+print, -2.5*alog10(kflux/kzp)
+
+This BG is 12.6 mag asec^-2
+
+I can also get a BG of 12.7 mag arcsec^-2 in K with 2% of the surface
+covered by emissivity=1.0 dust
+
+If I take out the extra "silver" surface that is standing in for the
+bluk, I get a trivial change to the BG.  Fine, and no need to worry about
+exactly what version of keckao2 is used. 
+
+Without the 5% dust, but with the 2.65% redux for aluminum, still with
+dust emissivity=0.5, BG is 13.1
+
+Going to a 5% change in the aluminum from 2.65% (but without the dust
+factor) gives K=12.9
+
+Without either the dust or the change to al, BG is 13.44 
+
+So the Al change is not the primary way to match the data.  Really
+need the dust. 
+
+If I go to emissivity=1.0 for the dust and still 5% of the surface
+covered, BG is 12.2 mag asec^-2
+
+But these numbers give too low throughput compared to KAON501.
+To reproduce those throughputs, I need zero dust on the aluminum
+surfaces, which makes sense since my 2.65% factor already matches
+the KAON501 curves, and 0.8% on the rest of the surfaces, again matching
+what KAON501 had to do.  So to match the KAON501 throughputs I have
+to do what they did; not a big surprise.
+
+Try this, which is 2.65%+0.8% adjusted to all the surfaces, as NGAO had to do:
+
+tekeck = emissivity(lambda, keck, 2.6, delta=0.0345) 
+tekao1 = emissivity(lambda, keckao1, 5., delta=0.0345)
+tekao2 = emissivity(lambda, keckao2, 5., dustfac=0.008)
+print, total(skyflux[kidx]+tekeck[kidx]+tekao1[kidx]+tekao2[kidx])*0.02
+kflux =  total(skyflux[kidx]+tekeck[kidx]+tekao1[kidx]+tekao2[kidx])*0.02
+print, -2.5*alog10(kflux/kzp)
+
+13.0, so not quite. 
+
+; this is the pristine aluminum coating I am using
+readcol, 'Aluminum.txt', /silent, format='f,f', alwave, alrefl
+
+; and this is what KAON501 used
+cd, 'keckngao'
+readcol, 'refl_fs72h.dat', /silent, format='f,f', palwave, palrefl
+cd, '..'
+
+plot, palwave, palrefl, xrange=[0.9,3], psym=0, yrange=[90,100]
+oplot, alwave, alrefl-2.65, psym=0, color=clr.green        
+oplot, alwave, alrefl, psym=0, color=clr.red               
+oplot, palwave, palrefl-0.8, psym=0, color=clr.blue       
+
+blue and green lines are really close, so the 2.65 is all I should need to match
+teh Keck NGAO value of 13 mag arcsec^-2. If I have to add another 0.8%
+to the 2.65%, that is significantly below the green line.  
+
+But then we get to the fact that I think that KAON501 overestimates
+the emissivity from the dust.
+
+-----
+
+The NGAO calculation just subtracts the dirt value, 0.8% in their case, from the
+transmission for each surface, so it adds to the emissivity.  
+
+Total emission at each surface i is calculated as the emissivity from
+the previous surface times the transmission of surface i, plus the
+emissivity of sufrace i: dat.emis[*,i] = dat.emis[*,i-1] * tran + emis
+where the first index is over wavelength and the second over
+surfaces. 
+
+Total transmission at each surface i is the product of the transmission of
+surface i and the transmission of the previous surfaces:
+dat.otran[*,i] = dat.otran[*,i-1] * tran
+
+dat.total_emis is the emissivity propogated through the last surface
+(index value n_surface-1 in the above calculations),  plus any off-angle 
+contribution (zero in this case). 
+
+ftran is the filter transmission function, resampled to the same wavelength
+values as everything else.
+
+filt.fwhm is the FWHM of the filter. 
+
+avg_tran is TOTAL(dat.otran[*,nopt-1] * dat.ftran)/TOTAL(dat.ftran)
+so is the filter-weighted transmission at the last surface, which propogates 
+all previous surfaces
+
+The emissivity is then calculated as:
+
+bkg_emis = dat.tot_emis * dat.ftran * dat.filt.fwhm/(TOTAL(dat.ftran * dat.dwvl) * avg_tran)
+bkg_mag = -2.5 * ALOG10( TOTAL(bkg_emis * dat.dwvl) / filt[wf].pflx )
+
+The bkg_mag can be done in two steps. The first computes teh flux over the
+filter band:
+bkd_flux = TOTAL(bkg_emis * dat.dwvl)
+and the rest is to make magintudes from flux
+
+So the flux calculation is:
+TOTAL(dat.tot_emis * dat.ftran * dat.filt.fwhm * dat.dwvl/(TOTAL(dat.ftran * dat.dwvl) * avg_tran))
+
+Which is:  TOTAL(dat.tot_emis * dat.ftran)*dat.dwvl*dat.filt.fwhm/(TOTAL(dat.ftran * dat.dwvl) * avg_tran)
+
+The first part of the numerator is just emissivity at each wavelength times the filter transmission integrated over the filter bandpass.  It is equivalent to 
+TOTAL(tot_emiss*ftran)*dlambda 
+
+TOTAL(data.ftran)*dat.dwvl/FWHM can be approximated as
+<ftran>*N*dat.dwvl/FWHM ~ <ftran> which is the average value of the filter
+transmission function over the bandpass.
+
+In that case, calculation for the background flux is:
+
+TOTAL(dat.tot_emis * dat.ftran * dat.dwvl)/(<ftran> * avg_tran)
+
+and the numerator is just the average total transmission, now accouting
+for the filter transmission, too. 
+
+And there are two questions to resolve: 1) should the demoninator have
+that <ftran>*avg_tran term and 2) should the emissivity propagation include
+the transmission of each surface?   I am almost positive that the
+term in the denominator should NOT be there.  Looking at other
+emissivity calculations, including Lloyd-Hart 2000, 2) doesn't belong
+there, either.  Ah. Of course they should not be there.  These
+are calibrated magnitudes, and the standard is observed through
+the same system exactly to take out the throughput.  This is
+just total flux.  If I want counts, then of course I need to include
+2), but surely not 1).
+
+If I take out both 1) and 2), then if I assume 2% of the surface
+blocked by dust, the NGAO_BKG code calculates a K background of
+12.65, pretty close to the right number and what my own code gets.
+
+----------------------------
+
+Now for the current Shane AO system:
+
+shane = ['Aluminum', 'Aluminum']
+oldao = ['oldao_1turn', 'oldao_tiptilt', 'oldao_oap1', 'oldao_dm', 'oldao_oap2', 'TT_Dichroic_Refl', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap',  'X1_Silver_Extrap']
+
+Eshane = emissivity(lambda, shane, 10., delta=0.0265, dustfac=0.02)
+eshaneao = emissivity(lambda, oldao, 10., dustfac=0.02) 
+print, total(skyflux[ksidx]+eshane[ksidx]+eshaneao[ksidx])*0.02
+ksflux = total(skyflux[ksidx]+eshane[ksidx]+eshaneao[ksidx])*0.02
+print, -2.5*alog10(ksflux/kszp)
+
+Ks BG = 12.2 mag asec^-2
+
+Reni tells me that the pupil image is 4.6 mm in diameter and the cold
+stop is 5 mm.  That is equivalent to the cold stop letting in light
+from a region 3.26 m in diameter.  The 3m primary takes up only 0.8464
+of the area of that 3.26 m diameter region. 
+
+I can treat that as a single area, with 84.6% having the emissivity of
+an aluminized mirror and the rest having emissivity 1.0.  And I can
+do that for all surfaces, because I think the oversize cold stop
+lets in extra light from all surfaces.
+Total dustfac = 1.-0.846 + 0.02 = 0.173
+
+eshane = emissivity(lambda, shane, 10., delta=0.0265, dustfac=0.173)
+eshaneao = emissivity(lambda, oldao, 10., dustfac=0.173) 
+print, total(skyflux[ksidx]+eshane[ksidx]+eshaneao[ksidx])*0.02
+ksflux = total(skyflux[ksidx]+eshane[ksidx]+eshaneao[ksidx])*0.02
+print, -2.5*alog10(ksflux/kszp)
+
+Ks BG calculated here is 11.3 mag asec^-2
+
+To get to 10.3 I need another factor of 2.5 in BG
+
+But that's not right.  The bigger pupil means that the effective size of the
+radiating aperture is bigger than the one collecting data from the sky. So
+I can't just use an effective emissivity as I did above. 
+
+Area of the pupil at the scale of the primary: 8.35138 m^2
+Area of the primary: 7.06858 m^2
+So the radiating apertures are a factor of 8.35138/7.06858 = 1.181 larger.
+
+Check: 1.181*0.846 = 0.999 ~ 1.0
+Check: 1.181*(1.-0.846) = 0.182
+
+So I think the emissivity calculation is:
+eshane = emissivity(lambda, shane, 10., delta=0.0265, dustfac=0.02)
+eshaneao = emissivity(lambda, oldao, 10., dustfac=0.02)
+bgshane = 0.181*(emissivity(lambda, shane, 10., delta=0.0265, dustfac=1.0))
+bgshaneao = 0.181*(emissivity(lambda, oldao, 10., dustfac=1.0))
+print, total(skyflux[ksidx]+eshane[ksidx]+eshaneao[ksidx]+bgshane[ksidx]+bgshaneao[ksidx])*0.02
+
+Ks BG = 11.14, so not much difference. Still need a factor of 2.2 in flux.
+
+The following:
+
+eshane = emissivity(lambda, shane, 10., delta=0.0265, dustfac=0.25) 
+eshaneao = emissivity(lambda, oldao, 10., delta=0.05, dustfac=0.25)
+ bgshane = 0.181*(emissivity(lambda, shane, 10., delta=0.0265, dustfac=1.0))
+ bgshaneao = 0.181*(emissivity(lambda, oldao, 10., dustfac=1.0))
+print, total(skyflux[ksidx]+eshane[ksidx]+eshaneao[ksidx]+bgshane[ksidx]+bgshaneao[ksidx])*0.02
+ksflux = total(skyflux[ksidx]+eshane[ksidx]+eshaneao[ksidx]+bgshane[ksidx]+bgshaneao[ksidx])*0.02
+print, -2.5*alog10(ksflux/kszp)
+
+Gives a Ks background of 10.46 mag arcsec^-2.  
+
+I may not have enough surfaces in oldao, say if there is an entrance window to
+the AO system or a second dewar window for IRCAL.  More surfaces or a small
+adjustment to the dust fraction would get to 10.3.  Adjusting the fractional
+area leaking through the cold stop does surprisingly little.
+
+I can split it between througput and dust:
+eshane = emissivity(lambda, shane, 10., delta=0.1265, dustfac=0.15)  
+eshaneao = emissivity(lambda, oldao, 10., delta=0.15, dustfac=0.15)
+bgshane = 0.181*(emissivity(lambda, shane, 10., delta=0.0265, dustfac=1.0))
+ bgshaneao = 0.181*(emissivity(lambda, oldao, 10., dustfac=1.0))
+
+BG in Ks for this configuration is 10.476
+
+If I re-do the shane AO calculations at 2.5C at the telescope and 5C for the AO
+system, as for Keck, the BG gets fainter by about 0.4 mag, ~40%.  Not enough
+to explain this.
+
+----
+
+Throughputs
+
+These two the same as used above, note the last surface should probably be
+CaF to match the exit surface as modeled in IRCAL.
+
+shane = ['Aluminum', 'Aluminum']
+oldao = ['oldao_1turn', 'oldao_tiptilt', 'oldao_oap1', 'oldao_dm', 'oldao_oap2', 'TT_Dichroic_Refl', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap',  'X1_Silver_Extrap']
+
+
+oldircal = ['CaF', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap',  'X1_Silver_Extrap', 'PICNIC_QE']
+
+newao = ['NaHG', 'NaHG', 'ALPAO', 'NaHG',  'TT_Dichroic_Refl', 'NaHG', 'MEMS_window', 'LGSWFS_Dich', 'FSG98', 'FSG98', 'CaF']
+
+newircal = ['CaF', 'FSG98', 'FSG98', 'FSG98', 'FSG98', 'H2RG_QE']
+
+Current AO system.  combined degradation in reflectivity/transmission is
+0.1265+0.15=0.2765, 0.3 for the AO system. 
+
+That's really brutal for the AO system, throughput is basically zero.
+So go back to the Keck AO system degradations, 2% dustfac on everthing
+and the 2.65% redux for aluminum.
+
+thshane = throughput(lambda, shane, delta=0.0465) 
+tholdao = throughput(lambda, oldao, delta=0.02)
+tholdircal = throughput(lambda, oldircal)
+thold = thshane*tholdao*tholdircal
+
+At 2 um, throughput is about 2.6. At 1.5 um it is 0.22
+The variation between 1 and 2 microns is driven by something 
+in the old ircal coatings. 
+
+thnewao = throughput(lambda, newao, delta=0.02)
+thnewircal = throughput(lambda, newircal)
+thnew = thshane*thnewao*thnewircal
+
+average gain is 40% in throughput
+
+---------------------------------------
+
+2012 May 25
+
+For reasonable assumptions like those that reproduce the Keck NGAO
+values, expect the current Shane AO system to have a background if
+11.14 mag/asec^2 in Ks. 
+
+If the cold stop were the right size, I would expect a BG of 12.2 mag/asec^2
+in Ks, so we should get a mag fainter in BG just from fixing the cold stop.
+
+For the new AO system, the background should be about the same, 12.2
+mag/arcsec^2 in Ks.
+
+There is an unaccounted for magnitude of BG, as the IRCAL BG is 10.3
+mag/asec^2.  So we might do better, but since we don't know where that
+is coming from we can't plan to fix it.
+
+Backgrounds:
+Filter  Old(pred) Old(meas)    New(pred) 
+J	16.1   	  16	       16.1
+H	13.8   	  14.4(*)      13.8
+Ks	11.14  	  10.2	       12.2	       
+Kp	11.41  	  ---	       12.5
+K	10.6      9.3	       11.7
+
+(*) The Lick Gemini instrument web pages say that the H-band
+background for that instrument is 14 mag/arcsec^2, so I'm not going
+to worry too much about this discrepancy. 
+
+Throughput, just telescope and instrument (and note, no filter)
+
+Filter Old   New
+J      0.22  0.32
+H      0.24  0.35
+Ks     0.28  0.38
+Kp     0.28  0.38
+K      0.28  0.38
+
+

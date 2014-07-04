@@ -1,0 +1,21 @@
+# 800 nm and bluer should have more like 70% QE, these fixed up to keep the spline
+# wiggles out of the near IR
+     500      80
+     600      80
+     700      80
+     800      80
+     900      80
+    1000      80
+    1100      80
+    1200      80
+    1300      80
+    1400      80
+    1500      80
+    1600      80
+    1700      80
+    1800      80
+    1900      80
+    2000      80
+    2100      80
+    2200      80
+    2300      80

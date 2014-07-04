@@ -1,0 +1,74 @@
+Surface desc.           Material        Temp (C)        Refl/Trans curve
+-------------           --------        --------        ----------------
+Primary                 Aluminum        10              Aluminum.txt
+Secondary               Aluminum        10              Aluminum.txt
+
+1st Turning Mirror      Lick_coating    10              Lick_coating
+OAP 1                   Lick_coating    10              Lick_coating
+DM1                     ALPAO           10              ALPAO.txt
+OAP 2                   Lick_coating    10              Lick_coating
+[TT dichroic            TTLGS_R         10              TTLGS_R.txt  (LGS) OR
+ Fold Mirror 2          Lick_Coating    10              Lick_coating (NGS)]
+OAP 3                   Lick_coating    10              Lick_coating
+MEMs window             MEMs_Window     10              MEMS_window.txt
+MEMs window             MEMs_Window     10              MEMS_window.txt
+MEMs DM                 Bare Gold       10              BAU.txt
+MEMs window             MEMs_Window     10              MEMS_window.txt
+MEMs window             MEMs_Window     10              MEMS_window.txt
+NaDichroicSciencePath   WFS_T           10              LGSWFS_Dich.txt
+OAP 4                   _FSG98          10              FSG98.txt
+Fold mirror 3           _FSG98          10              FSG98.txt
+Dewar window            IR anti-refl    10              ARIR.txt
+-------------------------------------------
+Dewar window            IR anti-refl    -196            ARIR.txt
+IR fold mirror          Bare Gold       -196            BAU.txt
+OAP_ircal_1             Bare Gold       -196            BAU.txt
+Filter                  NaHG            -196            NaHG.txt
+Cold stop               Cold stop       -196            ColdStop.txt
+OAP_ircal_2             _FSG98          -196            FSG98.txt
+IR fold mirror          _FSG98          -196            FSG98.txt
+H2RG                    H2RG_QE         -196            H2RG_QE.txt
+--------------------------------------------
+
+Dewar alternate list:
+--------------------------------------------
+Window                  CaF             -196            CaF.txt
+Turn Mirror             NaHG            -196            NaHG.txt
+OAP 1                   NaHG            -196            NaHG.txt
+Filter                  NaHG            -196            NaHG.txt
+Cold Stop               Cold stop       -196            ColdStop.txt
+OAP 2                   NaHG            -196            NaHG.txt
+Turn Mirror             NaHG            -196            NaHG.txt
+Detector                Hawaii_2RG_QE   -196            H2RG_QE.txt
+
+
+Surface desc.           Material        Temp (C)        Refl/Trans curve
+-------------           --------        --------        ----------------
+Primary                 Aluminum        10              Aluminum.txt
+Secondary               Aluminum        10              Aluminum.txt
+
+Fold mirror 1           NaHG            10              NaHG
+OAP 1                   NaHG            10              NaHG
+DM1                     ALPAO           10              ALPAO.txt
+OAP 2                   NaHG            10              NaHG
+TT dichroic             TTLGS_R         10              TT_Dichroic_Refl.txt
+OAP 3                   NaHG            10              NaHG
+MEMs window             MEMs_Window     10              MEMS_window.txt
+MEMs window             MEMs_Window     10              MEMS_window.txt
+MEMs DM                 Bare Gold       10              BAU.txt
+MEMs window             MEMs_Window     10              MEMS_window.txt
+MEMs window             MEMs_Window     10              MEMS_window.txt
+NaDichroicSciencePath   WFS_T           10              LGSWFS_Dich.txt
+OAP 4                   _FSG98          10              FSG98.txt
+Fold mirror 3           FM3_7           10              FM3_7.txt
+IRCAL window            IR anti-refl    10              ARIR.txt
+
+-------------------------------------------
+IRCAL window            IR anti-refl    -196            ARIR.txt
+IR fold mirror          _FSG98          -196            FSG98.txt
+OAP_ircal_1             _FSG98          -196            FSG98.txt
+Filter                  NaHG            -196            NaHG.txt
+Cold stop               Cold stop       -196            ColdStop.txt
+OAP_ircal_2             _FSG98          -196            FSG98.txt
+IR fold mirror          _FSG98          -196            FSG98.txt
+H2RG                    H2RG_QE         -196            H2RG_QE.txt

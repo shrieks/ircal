@@ -1,0 +1,24 @@
+import numpy as np
+
+def simspec(skymod='cp', R=500.0):
+    """
+    Resamples a given sky spectrum from constant delta-lambda to constant R.
+    Inputs:
+          skymod - which sky model to use
+                   cp = Gemini Cerro Pachon 10 mm H2O, airmass 1.0
+                   mh = modified Cerro Pachon (adds 10C blackbody)
+                   mk = 2 x Mauna Kea flux
+          R      - spectroscopy resolution: lambda/dlambda
+    Output:
+          resky  - resampled sky spectrum
+                   2 column array. Column 1 is wavelength in nm
+                                   Column 2 is flux in photons s-1 m-2 nm-1 arcsec-2
+    
+    Resampling is done by computing dlambda at the starting wavelength (lambda0) 
+    and adding all photons between lambda0 and lambda0 + dlambda. Process repeats
+    with lambda0 + dlambda as a starting point. Continues until the end point
+    (currently 2500 nm)
+    """
+
+
+                                    

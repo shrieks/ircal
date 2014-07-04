@@ -1,0 +1,778 @@
+cd, '/b/ircal/throughput'
+readcol, 'mk_skybg_zm_16_10_ph.dat', /silent, format='f,f', skylamall, skyfluxall
+inir = where(skylamall lt 2700.)
+lambda = skylamall[inir]
+skyflux = skyfluxall[inir]
+
+; three aluminum mirrors for the telescope
+; aluminum-silver-aluminum for the rotator
+; 4 silvered surfaces for the AO system: 2 OAPs, Tip-Tilt mirror, DM
+; dichroci first surface, dichroic second surface, instrument window. 
+; assume the second surface of the window is cold, so no emissivity,
+; and nothing for the bluk because that is trivial. look later to check. 
+keckao = ['Aluminum', 'Aluminum', 'Aluminum', 'Aluminum', 'X1_Silver_Extrap', 'Aluminum', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap',  'X1_Silver_Extrap', 'TT_Dichroic_Refl', 'X1_Silver_Extrap',  'X1_Silver_Extrap']
+
+keckaotlist = [2.6, 2.6, 2.6, 5,5,5,5,5,5,5,5,5,5]
+
+deltalist = [0.0265, 0.0265, 0.0265, 0.0265, 0.0, 0.0265, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+jidx = where(lambda gt 1170. and lambda lt 1330.)
+hidx = where(lambda gt 1490. and lambda lt 1780.)
+ksidx = where(lambda gt 1990. and lambda lt 2310.)
+kidx = where(lambda gt 2030. and lambda lt 2370.)
+kpidx = where(lambda gt 1950. and lambda lt 2290.)
+
+;zero points: photons sec^1 m^2 in the specified bandpass
+jzp = 3.031e9
+hzp = 2.817e9
+kszp = 1.5066e9
+kzp = 1.5062e9
+kpzp = 1.658e9
+
+For my MK sky model, airmass 1.0:
+K' sky bg is 14.77 mag/arcsec^2
+Ks sky bg is 14.80 mag/arcsec^2
+K sky bg is 14.87 mag/arcsec^2
+H sky bg is 13.80 mag/arcsec^2
+J sky bg is 16.08 mag/arcsec^2
+
+tkeck = background(lambda, keckao, keckaotlist, skyflux, deltalist, dustfac=0.0, edust=1.0, total_trans=ttrans)
+
+avtran = total(ttrans[kidx])/(n_elements(kidx))
+ kflux = (total(tkeck[kidx])*0.02)/avtran
+ print, kflux
+print, -2.5*alog10(kflux/kzp)
+
+For dustfrac = 0, K mag of background at airmass 1.0 is 13.09
+for dustrac = 0.008, the ngao kludge value, BG is 12.84
+(I think this is leaving out the last two surfaces, check)
+
+NGAO used a different sky model, at 1.5 airmasses and different sampling (get
+that right in the integration of the flux below if you recheck this! 0.02 ->
+0.1), nearIR_skybg_16_15_r5.dat
+
+My model, without anything after the TT dichroic because the bulk contribution
+is trivial and the Keck NGAO ar coatings are nearly perfect, with the sky at 1.5
+airmasses gives: 
+K bg = 12.98 for dustfrac=0
+K bg = 12.75 for dustfac = 0.008
+
+the ngao study used higher aluminum reflectivity by 0.01 in K but slightly
+lower protected silver by 0.005 So:
+deltalist = [0.0165, 0.0165, 0.0165, 0.0165, 0.005, 0.0165, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005]
+
+If I use those deltas I get:
+K bg of 13.03 with dustfrac=0.0 
+K bg 12.80 with dustfrac=0.008
+
+so even less in line with their results. 
+
+If I add two more silver surfaces I get the NGAO BG values, 12.9 for
+dustfrac=0, 12.65 for dustfrac=0.008  But I think that's unfair to the Keck
+NGAO model.  
+
+A tweak to any of the coatings would make the same kind of change, but should
+check the real ngao model too.
+
+keckao = ['Aluminum', 'Aluminum', 'Aluminum', 'Aluminum', 'X1_Silver_Extrap', 'Aluminum', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'TT_Dichroic_Refl', 'CAF2_BULK', 'NIR_AR', 'NIR_AR', 'CAF2_BULK' ]
+
+keckaotlist = [2.6, 2.6, 2.6, 5,5,5,5,5,5,5,5,5,5,5,5]
+
+deltalist = [0.0265, 0.0265, 0.0265, 0.0265, 0.0, 0.0265, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0,0.0,0.0]
+
+tkeck = background(lambda, keckao, keckaotlist, skyflux, deltalist, dustfrac=0.0, fileroot=IRCALROOT, total_trans=ttrans)
+
+for airmass 1.0, 
+K bg is 13.06 mag/arcsec^2 for dustfrac 0.0
+K bg is 12.73 mag/arcsec^2 with dustfrac 0.008 
+
+Try with the sky model at airmass 1.5:
+K bg is 12.95 mag/arcsec^2 with dustfrac=0.0
+K bg is 12.65 mag/arcsec^2 with dustfrac=0.008
+
+Close enough to the NGAO values, given I am using my coatings and deltas vs. the
+NGAO model, as described above. Fine.
+
+This also reproduces the Keck NGAO throughput estimates pretty well.
+
+What really must matter is the number of surfaces to add dust to?  Adding dust
+to the bulk doesn't seem correct, but this debate really in the noise. The code
+works well enough.
+
+-----------------------------------
+
+Now Mt. Hamiliton
+
+Use my adjusted sky model:
+My Mt. Hamilton sky background model is based on the Cerro Pachon sky spectrum
+from the Gemini Obseratory SciOps data.  Cerra Pachon is at 9000' and the sky is
+calculated for a temperature of 280K, more appropriate to Mt. Hamilton than the
+Mauna Kea sky.  The sky model is for airmass 1.0, 10 mm precipable water vapor, 
+as appropriate for Mt. Hamilton.
+
+Using that model sky, I compute an sky brightness as follows,
+in magnitude arcsec^2:
+
+J 16.1
+H 13.8
+Ks 14.6
+K' 14.6
+K 14.4
+
+
+This reproduces the J and H band sky brightness on Mt. Hamilton, but to get to
+K=13 I have to add an additional thermal component to increase the sky
+emissivity in K. The emissivity spectrum of this additional source is based on
+the sky transmission model that goes with the Cerro Pachon sky model, calculated
+using ATRAN. Emissivity is 1-transmission.  However, I need to impose on that
+transmission spectrum a minimum emissivity of 0.5 at all wavelengths.  The
+effect of the minimum is to increase the K-band emissivity and leave the J- and
+H-band sky values unchanged.  Increasing the temperature of the sky spectrum
+alone to reproduce K'=13 mag asec^-2, as given in the IRCAL manual, requires a
+temperature of 313 K (40 C), which seems unreasonably high.  It is possible that
+an ATRAN transmission spectrum calculated for the 4200 foot altitude of
+Mt. Hamilton would reproduce the K-band sky brightness without the need for the
+emissivity floor; I will pursue that in a later refinement of these
+calculations.
+
+My final, adjusted sky model predicts the Mt. Hamilton sky backgrounds:
+J sky bg is 16.11 mag/arcsec^2
+H skyi bg is 13.82 mag/arcsec^2
+K' sky bg is 13.19 mag/arcsec^2
+Ks sky bg is  12.97 mag/arcsec^2
+K sky bg is 12.48 mag/arcsec^2
+
+readcol, 'lick_sky_zenith.txt', /silent, format='f,f', skylamall, skyfluxall
+inir = where(skylamall lt 2700.)
+lambda = skylamall[inir]
+skyflux = skyfluxall[inir]
+IRCALROOT='/b/ircal/throughput'
+
+jidx = where(lambda gt 1170. and lambda lt 1330.)
+hidx = where(lambda gt 1490. and lambda lt 1780.)
+ksidx = where(lambda gt 1990. and lambda lt 2310.)
+kidx = where(lambda gt 2030. and lambda lt 2370.)
+kpidx = where(lambda gt 1950. and lambda lt 2290.)
+jzp = 3.031e9
+hzp = 2.817e9
+kszp = 1.5066e9
+kzp = 1.5062e9
+kpzp = 1.658e9
+
+Shane telescope plus old AO system:
+2 telescope mirrors, AO system is up through the NaR_splitter, then 2 more fold
+mirrors and the entrance window to IRCAL:
+oldao = ['Aluminum', 'Aluminum', 'oldao_1turn', 'oldao_tiptilt', 'oldao_oap1', 'oldao_dm', 'oldao_oap2','NaR_Splitter', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap']
+use 10C for telescope and AO system.  Leave off IRCAL for now
+oldaotlist = [10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10.]
+oldaodeltalist = [0.0265, 0.0265, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+; these are just copied from an earlier doc to have around. not necessarily the
+difinitive version of these systems, see later when they are actually used.
+newircal = ['ARIR', 'FSG98', 'FSG98', 'FSG98', 'FSG98', 'H2RG_QE']
+newao = ['Aluminum', 'Aluminum', 'NaHG', 'NaHG', 'ALPAO', 'NaHG', 'TT_Dichroic_Refl', 'NaHG','MEMS_window', 'LGSWFS_Dich', 'FSG98', 'FSG98', 'ARIR']
+
+for the oldao model, I get:
+K mag 11.81
+Ks mag 12.32
+Kp mag 12.57
+H mag 13.76
+J mag 16.04
+
+The IRCAL manual gives the following measured background values:
+J 16 mag/arcsec^2
+H 14.4 mag/arcsec^2
+Ks 10.3 mag/arcsec^2
+K 9.3 mag/arcsec^2 
+
+The Lick-Gemini instrument gives a measured H-band BG of 14 mag/arcsec^2.
+I will worry about that discrepancy some other time.
+
+The difference between 12.32 mag/arcsec^2 in Ks and the measured values of 10.3
+is a factor of 6.4 in flux. 
+
+Reni tells me that the pupil image is 4.6 mm in diameter and the cold stop is 5
+mm.  That is equivalent to the cold stop letting in light from a region 3.26 m
+in diameter.  The 3m primary takes up only 0.8464 of the area of that 3.26 m
+diameter region.  The bigger pupil means that the effective size of the
+radiating aperture is bigger than the one collecting data from the sky. So I
+can't just use an effective emissivity.
+
+Area of the pupil at the scale of the primary: 8.35138 m^2
+Area of the primary: 7.06858 m^2
+So the radiating apertures are a factor of 8.35138/7.06858 = 1.181 larger.
+
+So I think the emissivity calculation is:
+eopt_oldao = background(lambda, oldao, oldaotlist, skyflux, oldaodeltalist, dustfrac=0.0, fileroot=IRCALROOT, total_trans=oldaotrans)
+bg_oldao = 0.181*background(lambda, oldao, oldaotlist, skyflux*0.0, oldaodeltalist, dustfrac=0.0, fileroot=IRCALROOT, /allemis)
+eoldao = eopt_oldao+bg_oldao
+
+Note, sky set to 0.0 because this should just be thermal
+
+and I get, in mag/asec^2:
+K mag 10.52
+Ks mag 11.06
+Kp mag 11.33
+H mag 13.75
+J mag 16.04
+
+mean throughputs:
+K 0.67
+Ks 0.67
+Kp 0.67
+H 0.63
+J 0.62
+
+The difference betwen 11.06 mag/arcsec^2 in Ks and measured value of 10.3 is now
+only a factor of 2 in flux. 
+
+To check this against the througput estimates I need to add ircal.
+This is just dewar window, 2 fold mirrors, 2 OAPs, detector. no bulk, no filter.
+oldircal = ['X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'PICNIC_QE']
+
+oldircaltlist = [-196.0, -196.0, -196.0, -196.0, -196.0, -196.0]
+oldircaldlist = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+ircaltest = background(lambda, oldircal, oldircaltlist, skyflux, oldircaldlist, dustfrac=0.0, fileroot=IRCALROOT, total_trans=ircaltrans)
+This gives mean transmission for IRCAL of
+J 0.51
+H 0.52
+Ks 0.56
+K 0.56
+
+Claim in the IRCAL manual is that the IRCAL efficiency (Front of dewar window to
+detector, including filters,) is:
+J 0.54
+H 0.67
+K 0.67
+
+So my ircal model is too low relative to the measurements. 
+Changing the dewar window coating to the amazing NIR_AR coating from NGAO
+doesn't do it; that only seems to improve things by a few percent. 
+
+BUT in fact it is hard to see how the total ircal efficiency can be larger that
+the the detector quantum efficiency plot given in the same document, which has
+a max near 65%.  So I will stand by my model.
+
+oldshaneao = ['Aluminum', 'Aluminum', 'oldao_1turn', 'oldao_tiptilt', 'oldao_oap1', 'oldao_dm', 'oldao_oap2','NaR_Splitter', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'X1_Silver_Extrap', 'PICNIC_QE']
+
+; use 10C for telescope and AO system, 77K for ircal
+oldshaneaotlist = [10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., -196.0, -196.0, -196.0, -196.0, -196.0, -196.0]
+
+oldshaneaodeltalist = [0.0265, 0.0265, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+The emissivity calculation is:
+eopt_oldshaneao = background(lambda, oldshaneao, oldshaneaotlist, skyflux, oldshaneaodeltalist, dustfrac=0.0, fileroot=IRCALROOT, total_trans=oldshaneaotrans)
+bg_oldshaneao = 0.181*background(lambda, oldshaneao, oldshaneaotlist, skyflux*0.0, oldshaneaodeltalist, dustfrac=0.0, fileroot=IRCALROOT, /allemis)
+eoldshaneao = eopt_oldshaneao+bg_oldshaneao
+
+I get mean transmission:
+J 0.31
+H 0.33
+Ks 0.38
+K 0.38
+
+And backgrounds:
+K mag 10.52
+Ks mag 11.06
+Kp mag 11.33
+H mag 13.75
+J mag 16.04
+
+Which are unchanged, which is correct, since ircal should not contribute any
+background.
+
+The IRCAL manual claims total throughputs:
+J 0.08
+H 0.16
+K 0.13
+Ks 0.14
+
+which are a factor of almost 3 smaller than I predict in H and K and hopeless in
+J.  But those are above the atmosphere.  If I use that Cerro Pachon sky at 10 mm
+water vapor and 1 airmass, I predict the sky throughput to be:
+J 0.946
+H 0.962
+Kp 0.868
+Ks 0.902
+K 0.933
+
+Recall I had to adjust the K-band sky as if it had emissivity closer to 0.5, but
+that was a kludge so ignore that for now. 
+
+So maybe I should be trying for my telescope+AO model to reproduce the ircal
+manual emissivities after accounting for the atmosphere:
+J 0.09
+H 0.18
+K 0.14
+Ks 0.16
+
+If I want to increase the BG by a factor of 2, how much dust do I need?
+
+eoptd_oldshaneao = background(lambda, oldshaneao, oldshaneaotlist, skyflux, oldshaneaodeltalist, dustfrac=0.05, fileroot=IRCALROOT, total_trans=doldshaneaotrans)
+bgd_oldshaneao = 0.181*background(lambda, oldshaneao, oldshaneaotlist, skyflux*0.0, oldshaneaodeltalist, dustfrac=0.05, fileroot=IRCALROOT, /allemis)
+edoldshaneao = eoptd_oldshaneao+bgd_oldshaneao
+
+7% gets the Ks background mag to match, though the K is still too bright:
+K mag 9.80
+Ks mag 10.34
+Kp mag 10.62
+H mag 13.66
+J mag 15.96
+
+NOTE that the H and J mags should not really increase: this comes from the
+factor of the average tranmission in the denominator of the magnitude
+calculation used to scale the thermal bg photons to the equivalent source at the
+entrance to teh telescope.  it's a small effect, don't worry about it for now. 
+
+But the throughputs are crazy-low:
+K 0.11
+Ks 0.11
+Kp 0.11
+H 0.10
+J 0.09
+
+5% dust gets the K-band throughput closer to the measured values, but H and J 
+are still off. Throughputs:
+K 0.16
+Ks 0.16
+Kp 0.16
+H 0.14
+J 0.13
+
+BG mags are not a terrible match, given the precision with which I can calculate anything:
+K mag 10.01
+Ks mag 10.56
+Kp mag 10.83
+H mag 13.69
+J mag 15.99
+
+Difference in the Ks background is about 30%. 
+
+5% is a lot of dust, esp. as I put it on *everything* to get the throughput down
+and it is unlikely to be so bad in ircal.  the effect is to lower the throughput
+by the dustfrac, so this is like a 5% hit on all the coatings.  yuk.
+
+Well, no, that's not quite right. A 5% cut on the coatings gives much brighter
+backgrounds than the 5% dust, by something like half a magnitude. And even brighter
+in Ks than the crazy-bright ircal measurement:
+K mag 9.57
+Ks mag 10.11
+Kp mag 10.39
+H mag 13.67
+J mag 15.98
+Throughputs are not unreasonable, and still even a little high compared to the ircal vals:
+J 0.12
+H 0.13
+K 0.15
+
+A 2% cut in the coatings on all surfaces is closer to 5% dust in the background it predicts:
+K mag 10.14
+Ks mag 10.68
+Kp mag 10.96
+H mag 13.72
+J mag 16.02
+But throughputs are too high compared to the ircal vals:
+J 0.22
+H 0.23
+K 0.26
+
+So the 5% dust model works better than a plain coating cut. A 2% cut on all the coatings doesn't cut the throughput enough.  OK, I get that.  But why is the 5% dust so different from the 5% cut on all the coatings?  Well, the effective emissivity for 5% dust and nominal throughput of 0.90 is 0.145, whereas if I just cut the coatings by 5% it would be 0.15. So the emissivity is a little bigger for the simple coating cut, and blackbody is large, so I guess it matters.  That's why the 2% coating cut reproducdes the background of the 5% dust model better. The throghput of the 5% coating cut is not too far off from the 5% dust model, which is why that matches OK.
+
+-------------------------
+
+New ircal
+newircal = ['ARIR', 'FSG98', 'FSG98', 'FSG98', 'FSG98', 'H2RG_QE']
+newao = ['Aluminum', 'Aluminum', 'NaHG', 'NaHG', 'ALPAO', 'NaHG', 'TT_Dichroic_Refl', 'NaHG','MEMS_window', 'LGSWFS_Dich', 'FSG98', 'FSG98', 'ARIR']
+
+newaotlist =  [10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10.]
+newaodlist = [0.0265, 0.0265, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+enewao = background(lambda, newao, newaotlist, skyflux, newaodlist, dustfrac=0.0, fileroot=IRCALROOT, total_trans=newaotrans)
+
+newshaneao = ['Aluminum', 'Aluminum', 'NaHG', 'NaHG', 'ALPAO', 'NaHG', 'TT_Dichroic_Refl', 'NaHG','MEMS_window', 'LGSWFS_Dich', 'FSG98', 'FSG98', 'ARIR', 'ARIR', 'FSG98', 'FSG98', 'FSG98', 'FSG98', 'H2RG_QE']
+
+newshaneaotlist = [10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., -196.0, -196.0, -196.0, -196.0, -196.0, -196.0]  
+
+newshaneaodlist = [0.0265, 0.0265, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+enewshaneao = background(lambda, newshaneao, newshaneaotlist, skyflux, newshaneaodlist, dustfrac=0.0, fileroot=IRCALROOT, total_trans=newshaneaotrans)
+
+background mags:
+K mag 11.93
+Ks mag 12.45
+Kp mag 12.70
+H mag 13.76
+J mag 16.04
+
+throughput:
+K 0.56
+Ks 0.56
+Kp 0.56
+H 0.52
+J 0.48
+
+Actual ratios, new/old total ao system (clean):
+K 0.56/0.38  1.47
+Ks 0.56/0.38 1.47
+Kp 0.56/38   1.47
+H 0.52/0.33  1.36 
+J 0.48/0.31  1.56
+
+so we're a factor of 1.5 better throughput than my predictions for the (clean) old
+IRCAL, that's from coatings and a lot in the detector.  
+
+In fact both telescope+AO systems have very similar transmission.  The gain is
+all in the IRCAL detector QE.
+
+The difference between 12.45 mag/arcsec^2 bg and 10.3 is a factor of 7.2 in
+flux.  even if i can't find that factor of 2 in flux that would explain the
+current AO bg (i.e, the new system is also a factor of 2 higher), we gain a
+factor of 3.6 smaller BG. That's from coatings and the cold stop, mostly the
+former I think but should check.
+
+If I take the 5% dust:
+denewshaneao = background(lambda, newshaneao, newshaneaotlist, skyflux, newshaneaodlist, dustfrac=0.05, fileroot=IRCALROOT, total_trans=dnewshaneaotrans)
+
+background mags:
+K mag 11.02
+Ks mag 11.56
+Kp mag 11.83
+H mag 13.70
+J mag 15.98
+
+Throughput:
+K 0.21
+Ks 0.21
+Kp 0.21
+H 0.20
+J 0.18
+
+Ratios, new/old AO system, 5% dust
+K 0.21/0.16 = 1.31
+Ks 0.21/0.16 = 1.31
+Kp 0.21/1.6 = 1.31
+H 0.20/0.14 = 1.43
+J 0.18/0.13 = 1.38
+
+Why is this smaller?  Checked all the numbers, seem OK.  b/c there are two more
+AO system surfaces? The increase in BG is also much bigger. For the old AO
+system, the Ks mag went from 11.06 clean to 10.56 with dust.  Here it went from
+12.45 clean to 11.56 with dust. 
+
+With the dust, we gain a factor of 1.3 in throughput in the new vs. old AO
+system.  BG difference between 11.56 mag/asec^2 and 10.3 is a factor of 3.2 in
+flux.  That is consistent with the estimate above that even if I can't find the
+factor of 2 from the "dust" we stil get a factor of 3.2 less BG flux in the new
+system, that must be from the cold stop as well as lower emissivity.
+
+-----
+
+2012 Sept 12 New IRCAL and ShaneAO recpies
+
+newircal = ['ARIR', 'BAU', 'BAU', 'ColdStop', 'FSG98', 'FSG98', 'H2RG_QE']
+newao = ['Aluminum', 'Aluminum', 'LickCoating', 'LickCoating', 'ALPAO', 'LickCoating', 'TTLGS_R', 'LickCoating','MEMS_window', 'MEMS_window', 'BAU', 'MEMS_window', 'MEMS_window','WFS_T', 'FSG98', 'FSG98', 'ARIR']
+
+newshaneao = ['Aluminum', 'Aluminum', 'LickCoating', 'LickCoating', 'ALPAO', 'LickCoating', 'TTLGS_R', 'LickCoating','MEMS_window', 'MEMS_window', 'BAU', 'MEMS_window', 'MEMS_window','WFS_T', 'FSG98', 'FSG98', 'ARIR', 'ARIR', 'BAU', 'BAU', 'ColdStop', 'FSG98', 'FSG98', 'H2RG_QE']
+newshaneaotlist = [10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., 10., -196., -196., -196., -196., -196., -196., -196. ]
+newshaneaodlist = [0.0265, 0.0265, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+enewshaneao = background(lambda, newshaneao, newshaneaotlist, skyflux, newshaneaodlist, dustfrac=0.0, fileroot=IRCALROOT, total_trans=newshaneaotrans)
+
+Background:
+K mag 11.92
+Ks mag 12.45
+Kp mag 12.70
+H mag 13.76
+J mag 16.04
+
+Throughput:
+J 0.46
+H 0.51
+Ks 0.53
+
+Good, not much different than the old version.
+
+For 5% dust:
+K mag 10.76
+Ks mag 11.32
+Kp mag 11.59
+H mag 13.70
+J mag 15.98
+
+Throughput: wow,  nearly as bad as the old system. That's b/c there are so many more surfaces, and in my model the dust cuts the throughput of all of them, even things like the cold stop which of course don't get dusty. 
+
+J 0.14
+H 0.15
+Ks 0.15 
+
+---------------------------------
+
+Sensitivity: can I reprodude the IRCAL manual mag at which IRCAL gets
+1 DN per sec. IRCAL gain is 10 photons/sec.
+Manual quotes magnitudes which give 1 DN/s:
+J 21.93
+H 21.79
+Ks 21.00
+
+How many photons from a 21st mag object in Ks?
+(10.^(-21.0/2.5))*kszp  = 5.998
+So for the Kszp of 1.5066e9 photons/sec/m^2, a 21.0 mag object gives 6.0
+photons/sec/m^2. Those are above the atmosphere.  The 3m has an area
+of 7.07 m^2
+
+How many do I expect at IRCAL?
+6.*7.07*(total(oldshaneaotrans[ksidx])/n_elements(ksidx)) = 16.03 photons/s
+Well, OK, but that does not include the atmsophere. 
+
+The ircal manual claims 10 photons/sec (= 1 DN/s) at Ks=21.0
+
+My throughput in Ks is 0.38, a factor of 3 higher than the IRCAL manual says,
+which is 0.13. 
+If I use 0.13 I expect 5.5 photons/sec. 
+
+If I use the 5% dust model that reproduces the mags and throughputs reasonably
+well I predict 6.7 photons/sec from a Ks=21 object, as I should given that I
+reproduce everything else with that model.  But a factor of 1.5 lower
+than I expect given the measurement in the IRCAL manual.
+
+In H, number photons from a 0th mag object:
+(10.^(-21.79/2.5))*hzp = 5.42 photons/sec/m^2
+
+How many do I expect to get in IRCAL?
+5.42*7.07*(total(doldshaneaotrans[hidx])/n_elements(hidx)) = 4.43 photons/s 
+
+My average throghput in H is 0.14 (for the dusty AO system). The IRCAL manual
+says 16%, I think after the atmosphere I should expect more like 18%, in which
+case I should expect 6.9 photons/sec. That's not enough to fix it: again about a
+factor of 1.5 lower than the IRCAL manual predicts
+
+So I predict about 0.5 mag too pessimistic (bright) for the zero point
+magnitudes in Ks and 0.86 mag too bright in H.   In other words, I don't predict
+enough photons at a given magnitude. 
+
+What about the point source sensitivity numbers?
+Ircal manual says for a point source, S/N=5 in 300s for:
+J 21.8
+H 20.5
+K 17.8
+Ks 18.3
+
+N photons = (10.^(-18.3/2.5))*kszp = 72.1 photon/sec/m^2
+N phot detected = 72.1*7.07*(total(doldshaneaotrans[ksidx])/n_elements(ksidx))
+ = 80.54 photons/sec
+In 300 sec, that's 24162 photons from the object. 
+
+The total BG in Ks=10.3 mag/arcsec^2.  That's 3.83004e+07 photon/arcsec^2 in 300
+seconds. 
+
+Diffraction limit of the 3m in Ks (2.15 um) is 0.15 arcsec. Area of that
+aperture is 0.017 square arcsec.  
+
+Total number sky photons is 654937., uncertainty in that number is the sqrt =
+809.2
+
+12000/sqrt(12000+654937) = 29.3, this is supposed to be S/N 5.  so what gives. 
+Well, maybe this is not surprising. If I just use an aperture 5x the diameter
+of the diffraction limit, I get S/N 5.8 
+
+geez, if i interpret the ircal ETC correctly, they use a 2" (diameter?) 
+aperture to get S/N 5 in 300s at Ks=18.3.  That's an area of pi arcsec^2,
+which I would predict gives S/N 2.2
+
+The IRCAL ETC predicts 33.3 *detected* photons/sec for a Ks=21, which 
+is 3.3 DN/sec. The IRCAL manual says 1 DN/s for Ks=21, so hm, a factor
+of 3 higher. 
+
+If I ask the ETC for the detected photons for a 0th mag source I get
+8.367e9 photons/sec.  That is only a factor of 0.78 smaller than
+the number of photons for a 3m as measure *above the atmosphere*,
+and the throughput is supposed to be 0.13.  So this is much too big. 
+
+If I take the ETC value of detected photons/sec and rescale it to
+be before the ETC throughput cut of 0.13 and compare it to what I
+would predict for photons/sec for 0th mag, I get that the ETC
+predicts a factor of 6 more photons *from a 0th mag object above
+the atmosphere*. So our ZPs are very different. 
+
+Looking at its prediction for sky photons/pixel, the ETC predicts
+a factor of 4.8 more photons/sec. So very approximately the same offset.
+
+The difference between the area of keck and the shane is a factor of
+11, so it's not that this got re-purposed for keck.
+
+The ETC througput clearly multiplies its calculated atmosphere
+throughput by the calculated optics througpht by a mystery factor of
+0.60, which could be the PICNIC detector QE.
+
+So for Ks, the implied flux above the atmosphere for a 0mag source
+in photons/m^2/sec is 8.367e+09/(0.1340*7.07) = 8.83172e+09
+That's a long way away from my ZP of 1.5066e9  photons/m^2/sec,
+like a factor of 6.  
+
+How about H-band? The ETC says a zero-mag source gives: 1.554e+10/(0.152*7.07) =
+1.44607e+10 photon/m^2/s vs my ZP of 2.817e9, a factor of 5.1
+
+In J-band, for a 0 mag source the ETC predicts 1.193e+10/(0.0758*7.07) which is
+a factor of 7.34 higher.
+
+Rosalie's data:
+HD161734 K 8.5, 600s, 15 40s exposures, 16 reads each. 
+Source counts in a 5 pix (0.382 arcsec) radius aperture 501696/sec for
+the summed 16 reads. 
+For a gain of 10, that's 313560. photons/sec
+
+For HD161426, Ks=8.6, 480s 12 40s exposures, 16 reads each.
+Source counts in a 5 pix (0.382 arcsec) radius aperture 383606/sec for
+the summed 16 reads. 
+For a gain of 10, that's 239754 photons/sec
+
+Aperture size, using 0.07065"/pix is 0.329 arcsec^2. Diffraction limit in Ks 
+at lambda=2.15 um is 0.15", so the aperture is 2.*0.382/0.15 = 5x the FWHM in
+diamater. Good. 
+
+This is at airmass 1.39. The ETC predicts atmosphere throughput
+of 0.89 at 1.39 vs. 0.92 at zenith. 2mass also has a different
+zero point, as the Ks filter is different than the MK one,
+it seems (Cohen, Wheaton & Megeath 2003, AJ, 126, 1090).  
+The 2mass zp is 1.22092e+09, a factor of 1.24 smaller than mine.
+
+The ETC predicts  3.225e+06 photons/sec.  So Rosalie measures a factor of 10
+lower than the ETC predicts.
+
+My model with the 5% dust predicts 670013.49 photons/s for Ks=8.5,
+611059 photons/s for Ks=8.6. If I adjust that by 0.89 for the
+atmosphere and 1/1.24 for the zp, I expect 438583. photons/sec, a
+factor of 1.5 larger than Rosalie measures for HD161734 and 1.8 for
+HD161426. 
+
+Rosalie's sky flux is 1318 photons/pix/sec
+
+The ETC predicts 3494 photon/pix/sec from the sky at airmass 1.39.
+At airmass 1 it is just 3609 photons/pix/sec, so not a huge difference
+for airmass. 
+
+I predict 747 photons/pix/sec, a factor of 1.76 too faint.  That's a
+prediction for a mag 10.3 BG, not even my predicted BG from the 5%
+dust model, but who knows what the actual sky brightness was that
+day. Depends on temp, etc.  I'm not going to worry about it.
+
+So: my model predicts a factor of 1.5-1.8 more photons/sec than rosalie
+measures for a Ks = 8.5 mag star.  Rosalie uses an 0.8" diameter aperature;
+is that enough to get all the flux in the uncorrected halo? If not, then might some of this
+be explained by the fact that I haven't accounted for the Strehl?  Looking at one
+of Rosalie's images, there is certainly flux out beyond her 5-pix aperture.
+
+My model predicts about a factor of 1.5 too few photons/s in Ks and
+2.2 too few in H relative to the IRCAL manaual's predictions for the
+mag at which we get 10 photons/sec.
+
+I could fool around with the dust: 6% dust gives me a throughput
+of Ks=0.13, which is the measured value for ircal. the Ks mag is
+10.38, about right.  But the H throughput for that 6% model is 0.116,
+whereas the IRCAL model has 0.15. The 6% model has J throughput 0.11,
+the ircal manual has the improbably value of 0.08, but who knows.
+
+I could scale the J and H throughput values, I guess.  
+
+Note that the H filter throughput is about 84.5%, J is about 87% and K
+about 93.7%.  So while it is true that I don't have the filter
+throughpts in here, that doesn't make the match with the ircal quoted
+throughput data any better: ircal has best throughput in H even
+through its filter througput is worst.
+
+----------------------
+
+OK, throughput improvements, new vs. old ao system + ircal, clean:
+J factor of 1.5
+H factor 1.5
+Ks factor 1.4
+
+So gain a factor of 1.5 in sensitivity, a lot of which is from IRCAL
+Also gain 1.2 magnitudes less background in Ks from fixing the cold stop, a factor of 3 in BG flux
+
+For sky-limited case:
+Improve S/N in fixed time by sqrt(sensitivity_improvement) and by sqrt(old_bg/new_bg) 
+= sqrt(1.5*3) = 2.1
+
+Exposure time to fixed S/N ~ 1.5*3 = 4.5
+
+At the review I had 1 mag gain in background and 40% throughput gain in IRCAL, speed
+gain in time to fixed S/N is 3.6 
+
+For obj-limited case, improve S/N at fixed time by sqrt(1.5) = 20%, and time to fixed S/N by 1.5.
+
+If I don't have the dust contamination then the ratio of the clea new AO system to the 5%
+dust old system is a factor fo about 3.5 in all of J,H,Ks.  That's probably unrealistic,
+but a factor of somewhere between 1.5 and 3.5 is what we can get. 
+
+Time to S/N=5:
+Use an aperture 5x the diffraction limit, assume Don's latest on-axis strehl:
+Ks streh 0.8 diff limit 0.148" area 0.429 asec^2  
+H strehl 0.72 diff lim 0.113" area 0.251 asec^2
+J strehl 0.55 diff lim 0.086" area 0.145 asec^2 
+
+Use the improvement factor of 1.5 over current: 
+J 0.08*1.5 = 0.12
+H 0.16*1.5 = 0.24
+Ks 0.14*1.5 = 0.21
+
+BG mags:
+Ks mag 12.45
+H mag 13.76
+J mag 16.04
+
+BG photons expected in each aperture in 300s:
+mag = 10^(skyamg/2.5)*kszp*sky_area*telarea*efficiency
+Ks 10^(-12.45/2.5)*kszp*0.429*0.21*7.07 = 10048.3
+H 3759
+J 143.1
+
+S/N ~ objc_count_rate*sqrt(exptime)/sqrt(sky_count_rate) = 5, solve for objc_count_rate
+Ks 28.9 photons/sec -> Ks=19.3
+H 17.7 phot/s -> 20.5
+J 3.45 phot/s -> 22.3
+
+band  filter_dlambda
+J       0.16
+H       0.29
+Ks      0.32
+
+Nphotons_raw from mag=0 ph/s/m^2 per res element:
+Jband  3.01e-9*5.034e14*1.25*100.*100.*0.0025
+Hband  1.18e-9*5.034e14*1.64*100.*100.*0.0033
+Ksband 4.35e-10*5.034e14*2.15*100.*100.*0.0043 
+
+Nphotons_det = Nphotons_raw * 7.07m^2 * efficiency_band
+
+Nphot_sky per res el per sec: 
+mean(skyflux[jidx]*0.02)*Nel*eff*area_tel*area_sky 
+Nel is number of 0.02-nm elements that are in a resolution element
+area sky: 0.2" slit x 0.2" in other direction (for a first guess), 0.04 sq. arcsec
+
+Photon flux at R~500
+band dLambda   Nphotons_raw     Nphoton_det  Nphotdet_sky   Nphotos   Mag    ratio phot flux    ratio photon
+     res. el    from mag=0 obj   mag 0        per res el    S/N 5     for    to S/N=5 in filter  flux per
+                  ph/s/m^2       ph/s         ph/s          at R~500  S/N=5  to mag at S/N=5 per filt to per
+                 per res el     in res el                                    res el               res el
+J    0.0025um  4.74e7            4.01e7      19.7           1.28      18.7    33.1                63.9
+H    0.0033um  3.21e7            5.45e7	     166.3	    3.7	      17.9    25.1                87.9
+Ks   0.0043um  2.02e7 		 3.43e7	     195.4	    4.0       17.3    13.1                74.5
+
+ratio of phot flux to S/N=5 in filter to mag at S/N=5 per res el is in the sense of filter_flux/spec_flux
+
+For R=500 resolution elements Nel:
+J 0.25/0.02 = 125
+H 170
+Ks 215
+
+ratio rel el. to filter bandpasss:
+J  64
+H  88 
+Ks 74
+Good, just like the photon flux ratios.
+
+So to get to S/N 5 want 5.*sqrt(sky)/sqr(300.) = Nphotons_detected
+mag = -2.5log(Nphotons_dected/Nphotos_det_mag0)
+
+
+For R=3000, dLam = 0.7 nm for Ks, 0.55 nm for H and 0.42 for J
