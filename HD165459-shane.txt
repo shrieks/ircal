@@ -1,0 +1,4 @@
+IDL reduction arguments:
+jred_sharcs,'hd-j-dith','raw','lists/j-hd-dith.lis',/windowed,/bright
+jred_sharcs,'hd-h-dith','raw','lists/h-hd-dith.lis',/windowed,/bright
+jred_sharcs,'hd-ks-dith','raw','lists/ks-hd-dith.lis',/windowed,/bright

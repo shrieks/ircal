@@ -1,55 +1,244 @@
+
+<droot>/clean/<wave>/distort/cd<froot>.fits
+Has the sky-subtracted, flat-fielded, cosmic-ray cleand, background-subtracted file,
+trimmed to the illuminated region of the detector. (no distortion correction applied yet).
+
+201404:
+HD 165459 15s Ks  584, 585 - no AO?, 586 (AO on?), 587 (no AO?), 588 (with AO?), 589 (AO on)
+201405:
+BD 26 Ks 1188-1207, good data. Not all dithered
+20140701:
+HD 165459 All windowed, J, H, Ks
+20140719:
+HD 165459 Windowed J, H, Ks
+
 All fluxes in photons / s (except RN2n)
 
-bdout = ss.simshane(bd, skymod='cp',df=0.03,odel=0.01,aoT=10.0)
 --------------
 Running Shane New AO simulation model with parameters:
 Source type: point source
-skymodel = cp, AO temp = 10.0, dust frac = 0.030
+skymodel = cp, AO temp = 10.0, dust frac = 0.020
 Al delta = 0.0265, Other delta   = 0.0100
 Filter set = irc, Strehl ref = 0.8, subapertures=16
               ['Ks' 'H' 'K' 'J']
 sky  imag:  [ 14.598  13.849  13.871  15.842]
-thruput  :  [ 0.171  0.175  0.165  0.136]
-totalflux:  [ 4660.85   1440.282  9688.112   197.525]
-sky  omag:  [ 11.856  13.833  11.026  15.802]
-src  flux:  [ 107921.636  205852.022  127764.169  192603.51 ]
-Rsrc     :  [ 480064.257  780716.625  573718.799  536065.134]
-Rsky+emi :  [ 3009.48    551.718  6520.149    42.288]
-Remi     :  [ 2768.327     6.04   6069.626     0.001]
+thruput  :  [ 0.203  0.208  0.197  0.162]
+totalflux:  [ 4252.752  1709.879  8847.032   235.15 ]
+sky  omag:  [ 12.144  13.836  11.313  15.802]
+src  flux:  [ 128479.052  245063.675  152101.284  229291.524]
+Rsrc     :  [ 571509.134  929431.167  683003.43   638177.319]
+Rsky+emi :  [ 2745.973   654.991  5954.098    50.343]
+Remi     :  [ 2458.885     5.37   5417.758     0.001]
 RN2n     :  [ 2232.562  1323.     2342.812   744.188]
-Tot flux :  [ 485306.299  782591.343  582581.761  536851.609]
-Fowler limiting mag: [ 11.2    12.642  10.975  13.585]
+Tot flux :  [ 576487.67   931409.157  691300.341  638971.849]
+Fowler limiting mag: [ 11.439  12.739  11.214  13.686]
 
+--------------
+Running Shane New AO simulation model with parameters:
+Source type: point source
+skymodel = cp, AO temp = 10.0, dust frac = 0.020
+Al delta = 0.0265, Other delta   = 0.0100
+Filter set = irc, Strehl ref = 0.6, subapertures=8
+              ['Ks' 'H' 'K' 'J']
+sky  imag:  [ 14.598  13.849  13.871  15.842]
+thruput  :  [ 0.203  0.208  0.197  0.162]
+totalflux:  [ 4252.752  1709.879  8847.032   235.15 ]
+sky  omag:  [ 12.144  13.836  11.313  15.802]
+src  flux:  [ 128479.052  245063.675  152101.284  229291.524]
+Rsrc     :  [ 423447.637  560675.64   512252.573  258335.16 ]
+Rsky+emi :  [ 2745.973   654.991  5954.098    50.343]
+Remi     :  [ 2458.885     5.37   5417.758     0.001]
+RN2n     :  [ 2232.562  1323.     2342.812   744.188]
+Tot flux :  [ 428426.172  562653.631  520549.483  259129.69 ]
+Fowler limiting mag: [ 11.113  12.191  10.901  12.704]
 
-bd8  = ss.simshane(bdwaves,skymod='cp',df=0.03,odel=0.01,subaps=8,aoT=10.0)
-
-bdout = ss.simshane(bdwaves, skymod='cp',df=0.01,odel=0.01,aoT=10.0)
-
-In [66]: bdout = ss.simshane(bdwaves, skymod='cp',df=0.02,odel=0.01,aoT=10.0)
-
-
-DF of 0.001 - 0.01 explains low Rsky*texp number
 
 Angie's run was at ~20C for darks and sky, 8x subaps for sky
-bdout = ss.simshane(bdwaves, skymod='cp',df=0.02,odel=0.01,aoT=20.0,subaps=8)
+bd20 = ss.simshane(bd,skymod='cp',df=0.02,odel=0.01,aoT=20.0, subaps=8)
 --------------
 Running Shane New AO simulation model with parameters:
 Source type: point source
 skymodel = cp, AO temp = 20.0, dust frac = 0.020
 Al delta = 0.0265, Other delta   = 0.0100
 Filter set = irc, Strehl ref = 0.6, subapertures=8
-81.0
-48.0
-85.0
-27.0
               ['Ks' 'H' 'K' 'J']
 sky  imag:  [ 14.598  13.849  13.871  15.842]
 thruput  :  [ 0.203  0.208  0.197  0.162]
 totalflux:  [  8785.51    1733.934  17990.904    235.159]
 sky  omag:  [ 11.357  13.821  10.543  15.802]
-src  flux:  [ 11.384   1.418  14.843   0.492]
-Rsrc     :  [ 37.519   3.244  49.988   0.555]
-Rsky     :  [  5672.745    664.206  12107.971     50.344]
+src  flux:  [ 128479.052  245063.675  152101.284  229291.524]
+Rsrc     :  [ 423447.637  560675.64   512252.573  258335.16 ]
+Rsky+emi :  [  5672.745    664.206  12107.971     50.344]
 Remi     :  [  5385.657     14.585  11571.631      0.003]
 RN2n     :  [ 2232.562  1323.     2342.812   744.188]
-Fowler limiting mag: [ 0.59  -0.911  0.491 -1.466]
+Tot flux :  [ 431352.944  562662.845  526703.356  259129.692]
+Fowler limiting mag: [ 10.721  12.183  10.517  12.704]
+
+- Made darks (5s, 10s, 15s etc.) from Angie's data. Issues: 1s shorter than 201405 6s Ks 
+  band exposures and taken at 20C, whereas 201505 images of BD26 taken at 10C. Should
+  offset in effect (if anything, hotter temps should push up dark
+  count?)
+- Modified sharcs pipeline to not subtract sky because sky frames do not exist.
+  So frames are background-subtracted (?), flat-fielded and cosmic ray-cleaned.
+  Not combined because that didn't seem to do the right thing (bestcombined image is
+  blank)
+- 6 of the image files are marked as 6s, Ks band, 10C, 16x exposures of BD26. For the
+  rest, the fits header says Ks but the log says J, H etc. Trust the header? 
+- Found center pixel and added up counts in +/-5 pixel area. 20% overestimate because
+  square area is 100 pixels, circle is 81. Use aper instead
+- Ran strehl tool on all cleaned images. 
+  filevector = [88, 89, 95, 96, 03, 04]
+  strehl = [0.0786, 0.0887, 0.1014, 0.0808, 0.0595, x]
+- Gain is 2.25 e-/DN
+- Found bug with simshane in computing flux. Fixed. Doesn't affect mag limits much
+  Returns sensible src flux number for BD26
+- Ran variety of simshane runs with bd flux from calspec
+  All at 16x subaps (i.e. K strehl ~0.8 assumed - divide by 10 for ~0.08 reported by
+  Strehl tool)
+  To compare with photometry, # photons = (Rsrc/KstrehlScalFac + Rsky+emi)*6.0 + RN2n
+  DF	ODEL	ADEL	T	Ks Thru		Rsrc		6s expo			6s expo
+  	 							(0.08 Strehl)		(0.1 Strehl)
+   0	   0	   0	10C		0.39	1083324		662284			824782
+   0.01	0.01	0.01	10C		0.25	 702905		438177			543612
+   0.01	0.01	0.0265	10C		0.24	 679169		424338			525810
+   0.03 0.01	0.0265	10C		0.17	 480064		306878.4		378888
+   
+- Aper output:
+  e.g. aper, m88, 485, 389, f88, ef88, s88, es88, 2.25, 5.1, [60,80], [0, 15000], /flux, /exact 
+  phpadu argument (2.25 value, does nothing - just scales error in aper!)
+  Star     X       Y      Sky      			Fluxes (not scaled by gain!)
+     88  485.00  389.00  95.93+-37.3731		605028.8 +-  619.8
+     89  485.00  389.00  96.28+-37.3		656617.3 +-  637.7	
+	 95  601.00  381.00  89.85+-41.1		755506.6 +-  689.2
+	 96  601.00  381.00  91.09+-40.8		652356.6 +-  653.5
+	 03  485.00  281.00  84.99+-38.7		544040.2 +-  604.5
+	 04  485.00  281.00  82.56+-38.9		779796.8 +-  686.5
+	 	Mean	         90.11			    665557.7 =  1.4976e6 photons (2.25 gain)
+
+Total sky + bg in Airy core: 90.11 * 81 pixel^2 = 7299.4
+Predicted sky + emi counts from model: 2745.973 * 6 / 2.25 = 7322.6 - at df = 0.02 - constrains dust fraction
+
+Total src photons in airy core: 571509.134 * 6 / 2.25 = 1524024.4
+Strehl scale factor to get close to number above = 1524024.3 / 665557.7 = 2.29
+Strehl in image = 0.8 / 2.2 = 0.35
+
+Need to independently verify this with a believable strehl tool and with Rosalie's reduction
+
+Rosalie reduction pipeline: flat-fielded, cosmic-ray cleaned, sky sub?
+> jred_sharcs,'bd26-ks','raw','lists/bdlist-ks.txt',/windowed,/bright
+> bdred = readfits('bd26-ks.fits',hdr)
+> aper, bdred, 1220, 686, fbd, efbd, sbd, esbd, 2.25, 70, [80,100], [0, 2000], /flux, /exact, /nan
+Flux in 70 pixel radius: 161640 +- 268.6
+BG = 0.113519 +-0.088 per pixel
+
+aper, bdred, 1220, 686, fbd, efbd, sbd, esbd, 2.25, 50, [60,80], [0, 2000], /flux, /exact, /nan
+Flux = 154505 +- 263.2
+BG = 0.284 +- 0.20 
+
+Reduced files from idl pipeline, strehl estimation by tool:
+{For python reduced images, for reference: strehl = [0.0786, 0.0887, 0.1014, 0.0808, 0.0595, x]}
+strehl = [0.1040, 0.1176, 0.1245, 0.0994, 0.0756, 0.1181]
+Same trend as in python reduction
+
+> ssky = readfits('bd26_final_supersky.fits', shdr)
+> print, median(ssky), mean(ssky), stdev(ssky), minmax(ssky)
+      29.2792      28.9455      4.18901      0.00000      232.475
+One third as many counts as from python reduction - what does this represent?
+
+Counting all photons (without regard to Strehl):
+Set corefrac to 1.0 in simshane.py. Use reduced BD26 data (cleaned, flat-fielded, sky and dark subtracted)
+Set aircore radius in pixels to 40 (based on photometry radius at which counts flatten using aper).
+
+bd20 = ss.simshane(bd,skymod='cp',df=0.02,odel=0.01,aoT=10.55)
+--------------
+Running Shane New AO simulation model with parameters:
+Source type: point source
+skymodel = cp, AO temp = 10.6, dust frac = 0.020
+Al delta = 0.0265, Other delta   = 0.0100
+Filter set = irc, Strehl ref = 0.8, subapertures=16
+              ['Ks' 'H' 'K' 'J']
+sky  imag:  [ 14.598  13.849  13.871  15.842]
+thruput  :  [ 0.203  0.208  0.197  0.162]
+totalflux:  [ 4426.192  1710.645  9201.599   235.151]
+sky  omag:  [ 12.101  13.836  11.271  15.802]
+src  flux:  [ 128479.052  245065.87   152101.284  229293.97 ]
+Rsrc     :  [  838559.513  1599500.568   992737.544  1496560.231]
+Rsky+emi :  [ 177884.348   68749.157  369803.326    9450.485]
+Remi     :  [ 160015.508     596.264  337775.346       0.144]
+RN2n     :  [ 138556.688  138556.688  138556.688  138556.688]
+Tot flux :  [ 1155000.548  1806806.413  1501097.558  1644567.404]
+Fowler limiting mag: [  9.593  10.808   9.38   11.79 ]
+
+In [9]: 838559.513 * 6 / 2.15  # actual itime = ?
+Out[9]: 2340166.0827906975 ADU
+
+In [10]: 177884.348 * 6 / 2.15
+Out[10]: 496421.4362790698 ADU
+
+  Star     X       Y    Sky (per pixel)     Flux (ADU in 40 pixel radius) Sky (ADU in 40 pixel radius)				
+  88    485.00  389.00  94.11 +-39.80       2.91946e+06 +- 3716.3		  473048
+  89    485.00  389.00  94.38 +-39.91       2.93324e+06 +- 3725.9         474406
+  95    601.00  381.00  89.85 +-41.09       2.98975e+06 +- 3828.8         451635
+  96    601.00  381.00  91.09 +-40.77       2.93838e+06 +- 3799.1         457868
+  03    485.00  281.00  84.99 +-38.72       2.95681e+06 +- 3626.8         427206
+  04    485.00  281.00  82.56 +-38.88       3.06813e+06 +- 3647.1         414992
+  
+201404 HD:
+---------
+	froot='clean/Ks/distort/'
+	fpref='cdm140415_'
+	fnos = ['0584','0585','0586','0587','0589']
+	xc = [461, 451, 455, 247, 267, 267]
+	yc = [387, 391, 409, 377, 501, 495]
+	aperrads = [80, 80, 40, 80, 80, 40]
+	AOstatus = ['off','off','on','off','off','on']
+    exptime = 15.0 # seconds
+	actualit = 14.5479 # secs
+	gain = 2.15 # e-/ADU
+	subaps = 8 # 8x
+	tempoutF = 56.7 # F
+	tempoutC = 13.7
+	
+	hdout  = ss.simshane(hd,skymod='cp',df=0.03,odel=0.01,aoT=13.7,subaps=8.0, aperrad=40)
+	--------------
+	Running Shane New AO simulation model with parameters:
+	Source type: point source
+	skymodel = cp, AO temp = 13.7, dust frac = 0.030
+	Al delta = 0.0265, Other delta   = 0.0100
+	Filter set = irc, Strehl ref = 0.6, subapertures=8.0
+	              ['Ks' 'H' 'K' 'J']
+	sky  imag:  [ 14.598  13.849  13.871  15.842]
+	thruput  :  [ 0.171  0.175  0.165  0.136]
+	totalflux:  [  6140.134   1447.474  12684.968    197.528]
+	sky  omag:  [ 11.556  13.828  10.733  15.802]
+	src  flux:  [  534251.027  1053272.337   632388.903  1236193.124]
+	Rsrc     :  [ 3486959.735  6874517.856  4127487.883  8068408.722]
+	Rsky+emi :  [ 246766.032   58172.58   509796.551    7938.473]
+	Remi     :  [ 231756.313     924.556  482893.239       0.244]
+	RN2n     :  [ 138556.688  138556.688  138556.688  138556.688]
+	Tot flux :  [ 3872282.454  7071247.123  4775841.121  8214903.882]
+	Fowler limiting mag: [ 10.963  12.481  10.753  13.709]
+	
+	hdout  = ss.simshane(hd,skymod='cp',df=0.03,odel=0.01,aoT=13.7,subaps=8.0, aperrad=80)
+	--------------
+	Running Shane New AO simulation model with parameters:
+	Source type: point source
+	skymodel = cp, AO temp = 13.7, dust frac = 0.030
+	Al delta = 0.0265, Other delta   = 0.0100
+	Filter set = irc, Strehl ref = 0.6, subapertures=8.0
+	              ['Ks' 'H' 'K' 'J']
+	sky  imag:  [ 14.598  13.849  13.871  15.842]
+	thruput  :  [ 0.171  0.175  0.165  0.136]
+	totalflux:  [  6140.134   1447.474  12684.968    197.528]
+	sky  omag:  [ 11.556  13.828  10.733  15.802]
+	src  flux:  [  534251.027  1053272.337   632388.903  1236193.124]
+	Rsrc     :  [ 3486959.735  6874517.856  4127487.883  8068408.722]
+	Rsky+emi :  [  987064.128   232690.319  2039186.205    31753.893]
+	Remi     :  [  927025.253     3698.226  1931572.956        0.974]
+	RN2n     :  [ 554199.188  554199.188  554199.188  554199.188]
+	Tot flux :  [ 5028223.05   7661407.363  6720873.275  8654361.802]
+	Fowler limiting mag: [ 10.211  11.729  10.001  12.957]
+	
+	froot = 'clean/Ks/distort/cdm140415_05'
+	f = ['84','85','86','87','88','89']
+	               

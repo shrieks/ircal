@@ -2,7 +2,7 @@ import numpy as np
 from background import *
 
 def simshane(srcflux, skymod='cp', df=0.03, adel=0.0265, odel=0.01,
-             subaps=16, source='pts', filts='irc', aoT=18.0):
+             subaps=16, source='pts', filts='irc', aoT=18.0, aperrad=40.0):
     """
     Simulate Shane AO 3m AO system + instrument emissivity and througput
     Input: 
@@ -39,7 +39,7 @@ def simshane(srcflux, skymod='cp', df=0.03, adel=0.0265, odel=0.01,
     else:
         print 'Source type: point source'
     print 'skymodel = {0}, AO temp = {1:.1f}, dust frac = {2:.3f}'.format(skymod,aoT,df)
-    print 'Al delta = {0:.4f}, Other delta   = {1:.4f}'.format(adel,odel)
+    print 'Al delta = {0:.4f}, Other delta   = {1:.4f}, aperture radius = {2}'.format(adel,odel,aperrad)
 
 
     # ST mag system m = 0 = -2.5log10 F_lam - 21.10
@@ -226,16 +226,16 @@ def simshane(srcflux, skymod='cp', df=0.03, adel=0.0265, odel=0.01,
                                               (trans.sum()*
                                                filters[filt]['zpc'])))
         
-        # Airy core radius
-        airycorearf = (3600*(180.0/np.pi)*1.21966*filters[filt]['cwvl']/
-                       (shane['prdia']))              # arcsecs
-        airycorearp = airycorearf / ircam['pscale'] # pixels
+        # Airy core radius - now user defined based on photometry radius in real images
+        #airycorearf = (3600*(180.0/np.pi)*1.21966*filters[filt]['cwvl']/(shane['prdia'])) # arcsecs
+        airycorearp = aperrad #airycorearf / ircam['pscale'] # pixels
+        airycorearf = airycorearp * ircam['pscale']
         # angular area of airy core
         airycoreaa = np.pi*airycorearf**2 # in arcsec^2
         airycoreap = np.ceil(np.pi*airycorearp**2) # in whole pixels
 
-        corefrac = 0.86 * strehl[filt]
-
+        corefrac =  1.0 # 0.86 * strehl[filt]
+        #print 'core fraction = ', corefrac
         # Flux in airy disk from sky & emissivity (R_sky) - photons s-1
         if source == 'pts':
             output['Rsky'][i] = collarea*airycoreaa*output['oflux'][i]
@@ -286,7 +286,7 @@ def simshane(srcflux, skymod='cp', df=0.03, adel=0.0265, odel=0.01,
     print 'Rsky+emi : ', output['Rsky']
     print 'Remi     : ', output['Remi'] 
     print 'RN2n     : ', output['RN2n']
-    print 'Tot flux : ', output['Rsrc'] + output['Rsky'] + output['RN2n']
+    print 'Tot flux : ', output['Rsrc'] + output['Rsky']
     print 'Fowler limiting mag:', output['limmag']
 
     return output

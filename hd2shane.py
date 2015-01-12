@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib as m
 import matplotlib.pyplot as mp
 import simshane as ss
+import pyfits as pf
 
 from astropy.io import fits
 m.interactive(True)
@@ -21,5 +22,10 @@ kss     = str(kstrehl)
 # Send star through telescope
 hd = np.column_stack((lambdas, hdflux)) # create 2 column array
 # 16 x 16 subaps
-hdout  = ss.simshane(hd,skymod='cp',df=0.03,odel=0.01,aoT=18.0)
-hdout8 = ss.simshane(hd,skymod='cp',df=0.03,odel=0.01,subaps=8,aoT=18.0)
+# J
+hdout  = ss.simshane(hd,skymod='cp',df=0.01,odel=0.01,aoT=23, subaps=8, aperrad=35.0)
+# H
+hdout  = ss.simshane(hd,skymod='cp',df=0.01,odel=0.01,aoT=23, subaps=8, aperrad=20.0)
+# Ks
+hdout  = ss.simshane(hd,skymod='cp',df=0.01,odel=0.01,aoT=23, subaps=8, aperrad=15.0)
+#hdout8 = ss.simshane(hd,skymod='cp',df=0.03,odel=0.01,subaps=8,aoT=18.0)
