@@ -1,4 +1,4 @@
-
+# Older version of results. Do not use. "Results.txt" has latest (for ShaneAO workshop 2014-12-17)
 <droot>/clean/<wave>/distort/cd<froot>.fits
 Has the sky-subtracted, flat-fielded, cosmic-ray cleand, background-subtracted file,
 trimmed to the illuminated region of the detector. (no distortion correction applied yet).
@@ -114,9 +114,11 @@ Fowler limiting mag: [ 10.721  12.183  10.517  12.704]
 	 03  485.00  281.00  84.99+-38.7		544040.2 +-  604.5
 	 04  485.00  281.00  82.56+-38.9		779796.8 +-  686.5
 	 	Mean	         90.11			    665557.7 =  1.4976e6 photons (2.25 gain)
+                         ADU/pixel
 
 Total sky + bg in Airy core: 90.11 * 81 pixel^2 = 7299.4
 Predicted sky + emi counts from model: 2745.973 * 6 / 2.25 = 7322.6 - at df = 0.02 - constrains dust fraction
+Model sky counts in photons s-1 in Airy core
 
 Total src photons in airy core: 571509.134 * 6 / 2.25 = 1524024.4
 Strehl scale factor to get close to number above = 1524024.3 / 665557.7 = 2.29

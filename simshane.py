@@ -228,8 +228,8 @@ def simshane(srcflux, skymod='cp', df=0.03, adel=0.0265, odel=0.01,
         
         # Airy core radius - now user defined based on photometry radius in real images
         #airycorearf = (3600*(180.0/np.pi)*1.21966*filters[filt]['cwvl']/(shane['prdia'])) # arcsecs
-        airycorearp = aperrad #airycorearf / ircam['pscale'] # pixels
-        airycorearf = airycorearp * ircam['pscale']
+        airycorearp = aperrad #airycorearf / ircam['pscale'] # airy core radius in pixels
+        airycorearf = airycorearp * ircam['pscale'] # airy core radius in arcsecs
         # angular area of airy core
         airycoreaa = np.pi*airycorearf**2 # in arcsec^2
         airycoreap = np.ceil(np.pi*airycorearp**2) # in whole pixels
@@ -252,7 +252,7 @@ def simshane(srcflux, skymod='cp', df=0.03, adel=0.0265, odel=0.01,
             # area assumed to be 1 arcsec^2 for constant surface brightness obj
             output['Rsky'][i] = collarea*output['oflux'][i]
             output['Remi'][i] = collarea*output['eflux'][i]
-            output['Rsrc'][i] = strehl[filt]*collarea*output['sflux'][i]
+            output['Rsrc'][i] = corefrac*collarea*output['sflux'][i]
             output['RN2n'][i] = npix * ircam['rnfowl']**2 
         # elif source == 'ext':
             

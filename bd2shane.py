@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as mp
 import pyfits as pf
-import simIrcal as si
+#import simIrcal as si
 import simshane as ss
 from astropy.io import fits
 #from itertools import cycle
@@ -11,6 +11,7 @@ from astropy.io import fits
 # wavelengths in Angstroms
 #bdfits = pf.getdata('spectra/stars/bd26d2606_stis_002.fits',0)
 bdfits, bdhdr = fits.getdata('spectra/stars/bd26d2606_stis_002.fits', header=True)
+#bdfits, bdhdr = fits.getdata('spectra/stars/bd21d0607_stis_003.fits', header=True)
 #bd.names
 # ['WAVELENGTH', 'FLUX', 'STATERROR', 'SYSERROR', 'FWHM', 'DATAQUAL', 'TOTEXP']
 waves = bdfits.field(0) / 10.0 # convert to nm
@@ -28,13 +29,15 @@ bd = np.column_stack([waves, flux])
 #vega[:,0] = vegalamb
 
 # K band strehl ratios
-olstr = 0.6
-ols = str(olstr)
-shastr = 0.8
-shas = str(shastr)
+#olstr = 0.6
+#ols = str(olstr)
+#shastr = 0.8
+#shas = str(shastr)
 # Send bd & vega through the telescope
-bdout = ss.simshane(bd,skymod='cp',df=0.01,odel=0.01,aoT=10.6,aperrad=40.0)
-bd8   = ss.simshane(bd,skymod='cp',df=0.01,odel=0.01,aoT=10.6,aperrad=60.0)
-bd8   = ss.simshane(bd,skymod='cp',df=0.01,odel=0.01,aoT=10.6,aperrad=80.0)
+temp = 10.6
+dufr = 0.01
+bd60 = ss.simshane(bd,skymod='cp',df=dufr,odel=0.01,aoT=temp,aperrad=60.0)
+bd80 = ss.simshane(bd,skymod='cp',df=dufr,odel=0.01,aoT=temp,aperrad=80.0)
+bd10 = ss.simshane(bd,skymod='cp',df=dufr,odel=0.01,aoT=temp,aperrad=100.0)
 # Angie's darks taken at 20C
 #bd20 = ss.simshane(bd,skymod='cp',df=0.02,odel=0.01,aoT=20.0)

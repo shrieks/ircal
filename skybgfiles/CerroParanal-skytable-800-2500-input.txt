@@ -1,0 +1,45 @@
+Input Configuration
+
+
+   Altitude :  90.00
+   Airmass  :   1.00
+
+
+   Season      : Entire Year
+   Time Period : Entire Night
+   
+
+   PWV         : Seasonal Average
+   Monthly Averaged Solar Flux : 130.00 s.f.u
+
+   Components included in the radiance model:
+
+      Scattered Moon Light:
+         separation of Sun and Moon       :  90.00 degrees
+         separation of Moon and object    :  45.00 degrees
+         altitude of Moon above horizon   :  45.00 degrees
+         distance to Moon                 :   1.0000
+
+      Star Light
+
+      Zodiacal Light:
+         ecliptic longitude of object : 135.00 degrees
+         ecliptic latiude of object   :  90.00 degrees
+
+      Molecular Emission of Lower Atmosphere
+      Emission Lines of Upper Atmosphere
+      Airglow Continuum
+
+   Wavelength grid:
+       Range: 800.00 nm - 2500.00 nm
+       Fixed wavelength step delta=0.10 nm
+
+   LSF convolution kernel: none
+
+The effective central wavelengths are respectively B=440nm, V=550nm, R=640nm, I=790nm, J=1250nm, H=1650nm, K=2200nm. The spectrum is scaled after integration over the corresponding photometric filter. The photometric zero points and effective wavelengths are taken from the two following references:
+
+ 
+        (B,V,R,I) filters: Bessel, 1979, PASP, 91, 589
+        (J,H,K)   filters: Bessel and Brett, 1998, PASP, 100, 1134
+
+The sky magnitude is determined by the moon-phase and by the instrument bandpass, according to the table mentioned in the documentation. It should be noted that values for the Z band correspond to an extrapolation and assume a distribution of intensity constant with the wavelength. The sky spectrum in the 850-1100 nm and beyond present a number of atmospheric lines which are not modeled in the optical ETC.
