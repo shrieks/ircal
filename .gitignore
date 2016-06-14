@@ -43,3 +43,7 @@ tables/*
 papers/*
 pipeline/*
 previous/*
+
+*.jpg
+
+*.gif
