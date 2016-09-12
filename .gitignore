@@ -47,3 +47,5 @@ previous/*
 *.jpg
 
 *.gif
+
+.DS_Store
